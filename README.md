@@ -1,2 +1,2 @@
-# ethic-website
-Ethic's website code.
+# ethic-backend
+Ethic's backend code.
