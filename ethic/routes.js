@@ -8,5 +8,25 @@ module.exports = {
       "version": VERSION
     });
     return next();
+  },
+  user: function (req, res, next) {
+    res.send({});
+    return next();
+  },
+  userPolicies: function (req, res, next) {
+    res.send([]);
+    return next();
+  },
+  createUserPolicy: function (req, res, next) {
+    res.send({});
+    return next();
+  },
+  userClaims: function (req, res, next) {
+    res.send([]);
+    return next();
+  },
+  createUserClaims: function (req, res, next) {
+    res.send({});
+    return next();
   }
 };

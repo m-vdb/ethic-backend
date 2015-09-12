@@ -17,6 +17,11 @@ server.pre(function (request, response, next) {
 
 // routes
 server.get('/', routes.home);
+server.get('/users/:address', routes.user);
+server.get('/users/:address/policies', routes.userPolicies);
+server.post('/users/:address/policies', routes.createUserPolicy);
+server.get('/users/:address/claims', routes.userClaims);
+server.post('/users/:address/claims', routes.createUserClaims);
 
 
 module.exports = server;
