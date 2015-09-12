@@ -13,5 +13,5 @@ $ npm install .
 
 To start the test server type:
 ```bash
-$ node server.js
+$ npm start
 ```

@@ -3,5 +3,8 @@
   "private": true,
   "dependencies": {
     "restify": "4.0.2"
+  },
+  "scripts": {
+    "start": "node server.js"
   }
 }
