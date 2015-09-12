@@ -3,11 +3,17 @@ var routes = require('./routes.js');
 
 var server = restify.createServer({
   name: 'ethic-backend',
-  version: '0.0.1'
+  version: routes.version
 });
 server.use(restify.acceptParser(server.acceptable));
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
+
+// debugging
+server.pre(function (request, response, next) {
+  console.log(request.method, request.url);
+  next();
+});
 
 // routes
 server.get('/', routes.home);
