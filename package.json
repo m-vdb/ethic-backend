@@ -2,6 +2,6 @@
   "name": "ethic-backend",
   "private": true,
   "dependencies": {
-    "node-restify": "^0.2.1"
+    "restify": "4.0.2"
   }
 }
