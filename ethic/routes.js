@@ -1,4 +1,7 @@
+var restify = require('restify');
+
 var settings = require('./settings.js');
+var Member = require('./models/member.js');
 
 module.exports = {
   home: function (req, res, next) {
@@ -14,11 +17,32 @@ module.exports = {
    * a background check needs to run.
    */
   createMember: function (req, res, next) {
-    // TODO (Mongo):
-    // - check that data is enough
-    // - save member in member collection
-    res.send({});
-    return next();
+    req.assert('ssn', 'Invalid ssn').notEmpty().isInt();
+    req.assert('firstName', 'Invalid firstName').notEmpty().isAlpha();
+    req.assert('lastName', 'Invalid lastName').notEmpty().isAlpha();
+    req.assert('email', 'Invalid email').notEmpty().isEmail();
+
+    var errors = req.validationErrors();
+    if (errors) {
+      res.send(new restify.errors.BadRequestError("Bad parameters."));
+      return next();
+    }
+
+    var member = new Member({
+      ssn: req.params.ssn,
+      firstName: req.params.firstName,
+      lastName: req.params.lastName,
+      email: req.params.email,
+    });
+    member.save(function (err) {
+      if (err) {
+        return next(err);
+      }
+      res.send({
+        id: member._id
+      });
+      return next();
+    });
   },
   /**
    * Get member data.
