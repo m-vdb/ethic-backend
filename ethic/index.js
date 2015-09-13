@@ -1,4 +1,5 @@
 var restify = require('restify'),
+    validator = require('restify-validator'),
     passport = require('passport'),
     mongoose = require('mongoose');
 
@@ -19,6 +20,9 @@ server.use(auth());
 server.use(restify.acceptParser(server.acceptable));
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
+
+// utils
+server.use(validator);
 
 // debugging
 server.pre(function (request, response, next) {
