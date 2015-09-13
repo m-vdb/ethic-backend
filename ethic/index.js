@@ -1,10 +1,18 @@
-var restify = require('restify');
-var routes = require('./routes.js');
+var restify = require('restify'),
+    routes = require('./routes.js'),
+    auth = require('./auth.js')
+    passport = require('passport');
 
 var server = restify.createServer({
   name: 'ethic-backend',
   version: routes.version
 });
+
+// auth
+server.use(passport.initialize());
+server.use(auth());
+
+// common handlers
 server.use(restify.acceptParser(server.acceptable));
 server.use(restify.queryParser());
 server.use(restify.bodyParser());

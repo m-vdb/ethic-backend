@@ -2,6 +2,8 @@
   "name": "ethic-backend",
   "private": true,
   "dependencies": {
+    "passport": "0.3.0",
+    "passport-http": "0.3.0",
     "restify": "4.0.2"
   },
   "scripts": {
