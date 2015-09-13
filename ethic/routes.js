@@ -9,7 +9,19 @@ module.exports = {
     });
     return next();
   },
+  createUser: function (req, res, next) {
+    res.send({});
+    return next();
+  },
   user: function (req, res, next) {
+    res.send({});
+    return next();
+  },
+  acceptUser: function (req, res, next) {
+    res.send({});
+    return next();
+  },
+  denyUser: function (req, res, next) {
     res.send({});
     return next();
   },
