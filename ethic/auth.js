@@ -1,5 +1,4 @@
-var restify = require('restify'),
-    passport = require('passport'),
+var passport = require('passport'),
     BasicStrategy = require('passport-http').BasicStrategy;
 
 var ApiUser = require('./models/api_user.js');
