@@ -1,11 +1,14 @@
 var restify = require('restify'),
+    passport = require('passport'),
+    mongoose = require('mongoose');
+
+var settings = require('./settings.js'),
     routes = require('./routes.js'),
-    auth = require('./auth.js')
-    passport = require('passport');
+    auth = require('./auth.js');
 
 var server = restify.createServer({
   name: 'ethic-backend',
-  version: routes.version
+  version: settings.version
 });
 
 // auth
@@ -34,5 +37,8 @@ server.post('/members/:address/policies', routes.createMemberPolicy);
 server.get('/members/:address/claims', routes.memberClaims);
 server.post('/members/:address/claims', routes.createMemberClaims);
 
+
+// mongodb
+mongoose.connect(settings.mongoUri, settings.mongoOptions);
 
 module.exports = server;
