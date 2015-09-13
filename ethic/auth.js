@@ -2,13 +2,18 @@ var restify = require('restify'),
     passport = require('passport'),
     BasicStrategy = require('passport-http').BasicStrategy;
 
-passport.use(new BasicStrategy(function (username, password, done) {
-  // TODO: check credentials against database
-  if (username == 'toto') {
-    return done(null, {username: username});
-  }
+var ApiUser = require('./models/api_user.js');
 
-  return done(null, false, {message: "Incorrect credentials."});
+passport.use(new BasicStrategy(function (username, password, done) {
+  ApiUser.findOne({username: username}).select('password').exec(function (err, user) {
+    if (err) {
+      return done(null, false, err);
+    }
+    if (!user || user.password !== password) {
+      return done(null, false, {message: "Incorrect credentials."});
+    }
+    return done(null, {username: username});
+  });
 }));
 
 module.exports = function () {
