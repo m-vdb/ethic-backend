@@ -1,11 +1,10 @@
-var VERSION = '0.0.1';
+var settings = require('./settings.js');
 
 module.exports = {
-  version: VERSION,
   home: function (req, res, next) {
     res.send({
       "name": "ethic",
-      "version": VERSION
+      "version": settings.version
     });
     return next();
   },
