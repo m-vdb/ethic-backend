@@ -25,14 +25,14 @@ server.pre(function (request, response, next) {
 
 // routes
 server.get('/', routes.home);
-server.post('/users', routes.createUser);
-server.get('/users/:address', routes.user);
-server.post('/users/:address/accept', routes.acceptUser);
-server.post('/users/:address/deny', routes.denyUser);
-server.get('/users/:address/policies', routes.userPolicies);
-server.post('/users/:address/policies', routes.createUserPolicy);
-server.get('/users/:address/claims', routes.userClaims);
-server.post('/users/:address/claims', routes.createUserClaims);
+server.post('/members', routes.createMember);
+server.get('/members/:address', routes.member);
+server.post('/members/:id/accept', routes.acceptMember);
+server.post('/members/:id/deny', routes.denyMember);
+server.get('/members/:address/policies', routes.memberPolicies);
+server.post('/members/:address/policies', routes.createMemberPolicy);
+server.get('/members/:address/claims', routes.memberClaims);
+server.post('/members/:address/claims', routes.createMemberClaims);
 
 
 module.exports = server;
