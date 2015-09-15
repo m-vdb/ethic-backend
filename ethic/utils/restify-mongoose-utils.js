@@ -7,10 +7,10 @@ module.exports = function () {
         // 500
         cb(new restify.errors.InternalServerError('Bad Document type.'));
       }
-      Document.findOne(params, function (err, document) {
+      Document.findOne(params, function (err, doc) {
         if (err) cb(err);
-        else if (!document) cb(new restify.errors.NotFoundError());
-        else cb(null, document);
+        else if (!doc) cb(new restify.errors.NotFoundError());
+        else cb(null, doc);
       });
     }
     return next();
