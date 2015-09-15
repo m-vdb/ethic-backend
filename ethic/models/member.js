@@ -12,5 +12,8 @@ var memberSchema = new mongoose.Schema({
   collection: 'members'
 });
 
+memberSchema.methods.isNew = function () {
+  return this.state == 'new';
+};
 
 module.exports = mongoose.model('Member', memberSchema);
