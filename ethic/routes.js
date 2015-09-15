@@ -1,7 +1,11 @@
-var restify = require('restify');
+var restify = require('restify'),
+    web3 = require('web3');
 
-var settings = require('./settings.js');
-var Member = require('./models/member.js');
+var settings = require('./settings.js'),
+    accountUtils = require('./accounts/utils.js'),
+    AccountManager = require('./accounts/manager.js'),
+    Member = require('./models/member.js'),
+    web3Provider = require('./utils/web3-provider.js');
 
 module.exports = {
   home: function (req, res, next) {
@@ -57,12 +61,29 @@ module.exports = {
    * check came back positive.
    */
   acceptMember: function (req, res, next) {
-    // TODO (Mongo + Ethereum):
-    // - create member on ethereum
-    // - update member data in mongo (address + flag that he has been accepted)
-    // - return private key
-    res.send({});
-    return next();
+    // TODO: upgrade .isLength(24, 24) not available
+    req.assert('id', 'Invalid id').notEmpty().isHexadecimal();
+
+    req.getDocumentOr404(Member, {_id: req.params.id}, function (err, member) {
+      if (err) return next(err);
+      if (member.isNotNew()) next(new restify.errors.BadRequestError('Account is not new.'));
+
+      // create an ethereum account and bind the address on the member
+      var account = accountUtils.createAccount();
+      member.address = account.address;
+      member.save(function (err) {
+        if (err) return next(err);
+
+        var manager = new AccountManager(account);
+        web3.setProvider(web3Provider.get(manager));
+        // TODO: create member on contract
+        member.activate();
+        // TODO: maybe encrypt it or encode it
+        // TODO: fix strange format
+        res.send({privateKey: account.privateKey});
+        return next();
+      });
+    });
   },
   /**
    * Deny a member. This is called after a background
