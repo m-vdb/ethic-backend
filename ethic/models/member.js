@@ -4,7 +4,7 @@ var states = ['new', 'active', 'inactive', 'denied'];
 var memberSchema = new mongoose.Schema({
   firstName: String,
   lastName: String,
-  ssn: {type: String, index: {unique: true}},
+  ssn: {type: String, index: {unique: true}},  // TODO: number
   email: {type: String, index: {unique: true}},
   state: {type: String, default: 'new', enum: states},
   address: String
@@ -12,8 +12,14 @@ var memberSchema = new mongoose.Schema({
   collection: 'members'
 });
 
-memberSchema.methods.isNew = function () {
-  return this.state == 'new';
-};
+memberSchema.method({
+  isNotNew: function () {
+    return this.state !== 'new';
+  },
+  activate: function (cb) {
+    this.state = 'active';
+    this.save(cb);
+  }
+});
 
 module.exports = mongoose.model('Member', memberSchema);
