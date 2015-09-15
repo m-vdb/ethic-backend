@@ -2,11 +2,17 @@
   "name": "ethic-backend",
   "private": true,
   "dependencies": {
+    "ethereumjs-util": "1.3.8",
+    "ethereumjs-tx": "",
+    "hooked-web3-provider": "0.0.3",
     "mongoose": "4.1.6",
     "passport": "0.3.0",
     "passport-http": "0.3.0",
     "restify": "4.0.2",
-    "restify-validator": "0.3.1"
+    "restify-validator": "0.3.1",
+    "secure-random-bytes": "1.0.1",
+    "underscore": "1.8.3",
+    "web3": "0.12.2"
   },
   "scripts": {
     "start": "node server.js"
