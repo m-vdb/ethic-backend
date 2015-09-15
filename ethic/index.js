@@ -5,7 +5,8 @@ var restify = require('restify'),
 
 var settings = require('./settings.js'),
     routes = require('./routes.js'),
-    auth = require('./auth.js');
+    auth = require('./auth.js'),
+    restifyMongooseUtils = require('restify-mongoose-utils');
 
 var server = restify.createServer({
   name: 'ethic-backend',
@@ -23,6 +24,7 @@ server.use(restify.bodyParser());
 
 // utils
 server.use(validator);
+server.user(restifyMongooseUtils());
 
 // debugging
 server.pre(function (request, response, next) {
