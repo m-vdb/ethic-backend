@@ -19,6 +19,10 @@ memberSchema.method({
   activate: function (cb) {
     this.state = 'active';
     this.save(cb);
+  },
+  deny: function (cb) {
+    this.state = 'denied';
+    this.save(cb);
   }
 });
 
