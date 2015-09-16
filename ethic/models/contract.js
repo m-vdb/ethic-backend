@@ -1,4 +1,5 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose'),
+    web3 = require('web3');
 
 var contractSchema = new mongoose.Schema({
   address: String,
@@ -10,7 +11,11 @@ var contractSchema = new mongoose.Schema({
 
 contractSchema.statics({
   getMain: function (cb) {
-    return this.findOne({name: 'ethic_main'}, cb);
+    return this.findOne({name: 'ethic_main'}, function (err, contract) {
+      if (err) cb(err);
+      else if (!contract) cb(new Error('Cannot find main contract.'));
+      else cb(null, web3.eth.contract(contract.abi).at(contract.address));
+    });
   }
 });
 
