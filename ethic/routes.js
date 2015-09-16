@@ -92,10 +92,18 @@ module.exports = {
    * check came back negative.
    */
   denyMember: function (req, res, next) {
-    // TODO (Mongo):
-    // - update member data in mongo (flag that he has been denied)
-    res.send({});
-    return next();
+    // TODO: upgrade .isLength(24, 24) not available
+    req.assert('id', 'Invalid id').notEmpty().isHexadecimal();
+
+    req.getDocumentOr404(Member, {_id: req.params.id}, function (err, member) {
+      if (err) return next(err);
+      if (member.isNotNew()) return next(new restify.errors.BadRequestError('Account is not new.'));
+
+      member.deny(function (err) {
+        res.send({});
+        next(err);
+      });
+    });
   },
   /**
    * List all the member policies.
