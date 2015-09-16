@@ -77,11 +77,13 @@ module.exports = {
         var manager = new AccountManager(account);
         web3.setProvider(web3Provider.get(manager));
         // TODO: create member on contract
-        member.activate();
-        // TODO: maybe encrypt it or encode it
-        // TODO: fix strange format
-        res.send({privateKey: account.privateKey});
-        return next();
+        member.activate(function (err) {
+          if (err) return next(err);
+          // TODO: maybe encrypt it or encode it
+          // TODO: fix strange format
+          res.send({privateKey: account.privateKey});
+          next();
+        });
       });
     });
   },
