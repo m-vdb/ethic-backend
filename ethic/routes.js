@@ -66,7 +66,7 @@ module.exports = {
 
     req.getDocumentOr404(Member, {_id: req.params.id}, function (err, member) {
       if (err) return next(err);
-      if (member.isNotNew()) next(new restify.errors.BadRequestError('Account is not new.'));
+      if (member.isNotNew()) return next(new restify.errors.BadRequestError('Account is not new.'));
 
       // create an ethereum account and bind the address on the member
       var account = accountUtils.createAccount();
