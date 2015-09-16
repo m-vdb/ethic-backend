@@ -2,7 +2,8 @@ var mongoose = require('mongoose');
 
 var contractSchema = new mongoose.Schema({
   address: String,
-  name: {type: String, index: {unique: true}}
+  name: {type: String, index: {unique: true}},
+  abi: Array
 }, {
   collection: 'contracts'
 });
