@@ -1,25 +1,14 @@
-var randomBytes = require('secure-random-bytes'),
-    ethUtil = require('ethereumjs-util');
+var web3 = require('web3');
 
 
 module.exports = {
-  accountFromPrivateKey: function (privateKey) {
-    if (! privateKey instanceof Buffer) {
-      privateKey = new Buffer(privateKey, 'hex');
+  unlock: function (address) {
+    console.log('unlocking ', address);
+    if (!web3.personal.unlockAccount(address, 'toto')) { // TODO: passphrase
+      throw new Error('Cannot unlock account ' + address);
     }
-    var publicKey = ethUtil.privateToPublic(privateKey).toString('hex');
-    var address = ethUtil.publicToAddress(publicKey).toString('hex');
-    privateKey = privateKey.toString('hex');
-
-    return {
-      address: address,
-      privateKey: privateKey,
-      publicKey: publicKey,
-      hash: ethUtil.sha3(publicKey + privateKey).toString('hex')
-    };
   },
-  createAccount: function () {
-    var privateKey = randomBytes(64);
-    return this.accountFromPrivateKey(privateKey);
+  createAccount: function (cb) {
+    return web3.personal.newAccount('toto', cb);  // TODO: passphrase
   }
 };
