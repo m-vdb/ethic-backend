@@ -9,7 +9,7 @@ var contractSchema = new mongoose.Schema({
   collection: 'contracts'
 });
 
-contractSchema.statics({
+contractSchema.static({
   getMain: function (cb) {
     return this.findOne({name: 'ethic_main'}, function (err, contract) {
       if (err) cb(err);
