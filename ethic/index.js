@@ -37,13 +37,13 @@ server.pre(function (request, response, next) {
 // routes
 server.get('/', routes.home);
 server.post('/members', routes.createMember);
-server.get('/members/:address', routes.member);
+server.get('/members/:id', routes.member);
 server.post('/members/:id/accept', routes.acceptMember);
 server.post('/members/:id/deny', routes.denyMember);
-server.get('/members/:address/policies', routes.memberPolicies);
-server.post('/members/:address/policies', routes.createMemberPolicy);
-server.get('/members/:address/claims', routes.memberClaims);
-server.post('/members/:address/claims', routes.createMemberClaims);
+server.get('/members/:id/policies', routes.memberPolicies);
+server.post('/members/:id/policies', routes.createMemberPolicy);
+server.get('/members/:id/claims', routes.memberClaims);
+server.post('/members/:id/claims', routes.createMemberClaims);
 
 
 // mongodb
