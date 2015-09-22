@@ -3,8 +3,8 @@ var restify = require('restify'),
 
 var settings = require('./settings.js'),
     accountUtils = require('./accounts/utils.js'),
-    AccountManager = require('./accounts/manager.js'),
     Member = require('./models/member.js'),
+    Contract = require('./models/contract.js'),
     web3Provider = require('./utils/web3-provider.js');
 
 module.exports = {
@@ -69,20 +69,29 @@ module.exports = {
       if (member.isNotNew()) return next(new restify.errors.BadRequestError('Account is not new.'));
 
       // create an ethereum account and bind the address on the member
-      var account = accountUtils.createAccount();
-      member.address = account.address;
-      member.save(function (err) {
+      web3.setProvider(web3Provider.default());
+      var account = accountUtils.createAccount(function (err, address) {
         if (err) return next(err);
 
-        var manager = new AccountManager(account);
-        web3.setProvider(web3Provider.get(manager));
-        // TODO: create member on contract
-        member.activate(function (err) {
+        console.log("created account", address);
+        member.address = address;
+        member.save(function (err) {
           if (err) return next(err);
-          // TODO: maybe encrypt it or encode it
-          // TODO: fix strange format
-          res.send({privateKey: account.privateKey});
-          next();
+
+          Contract.getMain(function (err, contract) {
+            if (err) return next(err);
+
+            contract.create_member(address, {from: web3.eth.accounts[0]}, function (err) {
+              if (err) return next(err);
+
+              member.activate(function (err) {
+                if (err) return next(err);
+
+                res.send({address: address});
+                next();
+              });
+            });
+          });
         });
       });
     });
