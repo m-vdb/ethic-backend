@@ -25,10 +25,7 @@ module.exports = {
     req.assert('firstName', 'Invalid firstName').notEmpty().isAlpha();
     req.assert('lastName', 'Invalid lastName').notEmpty().isAlpha();
     req.assert('email', 'Invalid email').notEmpty().isEmail();
-
-    var errors = req.validationErrors();
-    if (errors) {
-      res.send(new restify.errors.BadRequestError("Bad parameters."));
+    if (req.sendValidationErrorIfAny()) {
       return next();
     }
 
@@ -63,6 +60,9 @@ module.exports = {
   acceptMember: function (req, res, next) {
     // TODO: upgrade .isLength(24, 24) not available
     req.assert('id', 'Invalid id').notEmpty().isHexadecimal();
+    if (req.sendValidationErrorIfAny()) {
+      return next();
+    }
 
     req.getDocumentOr404(Member, {_id: req.params.id}, function (err, member) {
       if (err) return next(err);
@@ -81,7 +81,7 @@ module.exports = {
           Contract.getMain(function (err, contract) {
             if (err) return next(err);
 
-            // we do this call using our primary account, not the user's
+            // we do this call using our primary account, not the member's
             contract.create_member(address, {from: web3.eth.accounts[0]}, function (err) {
               if (err) return next(err);
 
@@ -104,6 +104,9 @@ module.exports = {
   denyMember: function (req, res, next) {
     // TODO: upgrade .isLength(24, 24) not available
     req.assert('id', 'Invalid id').notEmpty().isHexadecimal();
+    if (req.sendValidationErrorIfAny()) {
+      return next();
+    }
 
     req.getDocumentOr404(Member, {_id: req.params.id}, function (err, member) {
       if (err) return next(err);
@@ -121,6 +124,9 @@ module.exports = {
   memberPolicies: function (req, res, next) {
     // TODO: upgrade .isLength(24, 24) not available
     req.assert('id', 'Invalid id').notEmpty().isHexadecimal();
+    if (req.sendValidationErrorIfAny()) {
+      return next();
+    }
 
     req.getDocumentOr404(Member, {_id: req.params.id}, function (err, member) {
       if (err) return next(err);
