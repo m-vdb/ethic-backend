@@ -119,10 +119,20 @@ module.exports = {
    * List all the member policies.
    */
   memberPolicies: function (req, res, next) {
-    // TODO (Ethereum):
-    // - retrieve a list of all the member's policies
-    res.send([]);
-    return next();
+    // TODO: upgrade .isLength(24, 24) not available
+    req.assert('id', 'Invalid id').notEmpty().isHexadecimal();
+
+    req.getDocumentOr404(Member, {_id: req.params.id}, function (err, member) {
+      if (err) return next(err);
+      if (!member.isActive()) return next(new restify.errors.BadRequestError('Account is not active.'));
+
+      Contract.getMemberStorage(member.address, function (err, policies) {
+        if (err) return nex(err);
+
+        res.send(policies);
+        return next();
+      });
+    });
   },
   /**
    * Create a member policy.
