@@ -81,6 +81,7 @@ module.exports = {
           Contract.getMain(function (err, contract) {
             if (err) return next(err);
 
+            // we do this call using our primary account, not the user's
             contract.create_member(address, {from: web3.eth.accounts[0]}, function (err) {
               if (err) return next(err);
 
