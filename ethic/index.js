@@ -7,6 +7,7 @@ var web3Admin = require('./utils/web3-admin.js'),
     settings = require('./settings.js'),
     routes = require('./routes.js'),
     auth = require('./auth.js'),
+    restifyUtils = require('./utils/restify-utils'),
     restifyMongooseUtils = require('./utils/restify-mongoose-utils');
 
 web3Admin();  // required to use admin calls
@@ -27,6 +28,7 @@ server.use(restify.bodyParser());
 // utils
 server.use(validator);
 server.use(restifyMongooseUtils());
+server.use(restifyUtils());
 
 // debugging
 server.pre(function (request, response, next) {
