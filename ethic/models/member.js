@@ -17,7 +17,7 @@ memberSchema.method({
     return this.state !== 'new';
   },
   isActive: function () {
-    return this.state !== 'active';
+    return this.state == 'active';
   },
   activate: function (cb) {
     this.state = 'active';
