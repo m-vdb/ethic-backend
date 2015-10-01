@@ -14,7 +14,7 @@ contractSchema.static({
     return this.findOne({name: 'ethic_main'}, function (err, contract) {
       if (err) cb(err);
       else if (!contract) cb(new Error('Cannot find main contract.'));
-      else cb(null, web3.eth.contract(contract.abi).at(contract.address));
+      else cb(null, contract.ethereumContract());
     });
   },
   getStorage: function (key, cb) {
@@ -38,6 +38,16 @@ contractSchema.static({
       cb(null, members[address]);
     });
   },
+});
+
+// TODO:
+//  - find a way to bind each method from the eth contract to mongo contract
+//  - have a configuration file (enough for now) with gas costs
+//  - implement transaction receipt check (while ...)
+contractSchema.method({
+  ethereumContract: function () {
+    return web3.eth.contract(this.abi).at(this.address);
+  }
 });
 
 module.exports = mongoose.model('Contract', contractSchema);
