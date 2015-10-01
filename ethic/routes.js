@@ -132,12 +132,7 @@ module.exports = {
       if (err) return next(err);
       if (!member.isActive()) return next(new restify.errors.BadRequestError('Account is not active.'));
 
-      Contract.getMemberStorage(member.address, function (err, policies) {
-        if (err) return nex(err);
-
-        res.send(policies);
-        return next();
-      });
+      // TODO
     });
   },
   /**
