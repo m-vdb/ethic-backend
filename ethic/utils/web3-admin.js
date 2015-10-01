@@ -12,18 +12,6 @@ module.exports = function () {
         params: 1,
         inputFormatter: [web3._extend.formatters.formatInputString],
         outputFormatter: web3._extend.formatters.formatOutputString
-      }),
-
-      new web3._extend.Method({
-        name: 'unlockAccount',
-        call: 'personal_unlockAccount',
-        params: 3,
-        inputFormatter: [
-          web3._extend.formatters.formatInputString,
-          web3._extend.formatters.formatInputString,
-          web3._extend.formatters.formatInputInt
-        ],
-        outputFormatter: web3._extend.formatters.formatOutputBool
       })
     ],
     properties: []
