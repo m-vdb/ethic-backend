@@ -2,7 +2,7 @@ var restify = require('restify'),
     web3 = require('web3');
 
 var settings = require('./settings.js'),
-    accountUtils = require('./accounts/utils.js'),
+    accountUtils = require('./utils/accounts.js'),
     Member = require('./models/member.js'),
     Contract = require('./models/contract.js');
 
