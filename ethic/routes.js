@@ -4,8 +4,7 @@ var restify = require('restify'),
 var settings = require('./settings.js'),
     accountUtils = require('./accounts/utils.js'),
     Member = require('./models/member.js'),
-    Contract = require('./models/contract.js'),
-    web3Provider = require('./utils/web3-provider.js');
+    Contract = require('./models/contract.js');
 
 module.exports = {
   home: function (req, res, next) {
@@ -69,7 +68,6 @@ module.exports = {
       if (member.isNotNew()) return next(new restify.errors.BadRequestError('Account is not new.'));
 
       // create an ethereum account and bind the address on the member
-      web3.setProvider(web3Provider.default());
       var account = accountUtils.createAccount(function (err, address) {
         if (err) return next(err);
 

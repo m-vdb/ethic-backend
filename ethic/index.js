@@ -1,7 +1,8 @@
 var restify = require('restify'),
     validator = require('restify-validator'),
     passport = require('passport'),
-    mongoose = require('mongoose');
+    mongoose = require('mongoose'),
+    web3 = require('web3');
 
 var web3Admin = require('./utils/web3-admin.js'),
     settings = require('./settings.js'),
@@ -10,6 +11,7 @@ var web3Admin = require('./utils/web3-admin.js'),
     restifyUtils = require('./utils/restify-utils'),
     restifyMongooseUtils = require('./utils/restify-mongoose-utils');
 
+web3.setProvider(new web3.providers.HttpProvider('http://localhost:8545'));
 web3Admin();  // required to use admin calls
 var server = restify.createServer({
   name: 'ethic-backend',
