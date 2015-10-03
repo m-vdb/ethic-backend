@@ -4,5 +4,5 @@ var gulp = require('gulp'),
 
 gulp.task('test', function () {
   return gulp.src(['test/**/*.coffee'], {read: false})
-    .pipe(mocha({reporter: 'nyan'}));
+    .pipe(mocha({reporter: 'nyan', require: ['./test/setup.js']}));
 });
