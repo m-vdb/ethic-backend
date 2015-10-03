@@ -1,4 +1,7 @@
 # ethic-backend
+
+[![Circle CI](https://circleci.com/gh/m-vdb/ethic-backend.svg?style=shield&circle-token=8499ee22b10ad230a99c5892e0b3ba22ddd298ee)](https://circleci.com/gh/m-vdb/ethic-backend/tree/master)
+
 Ethic's backend code.
 
 ## Installation
