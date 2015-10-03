@@ -26,3 +26,8 @@ $ npm start
 - **POST** `/members/<address>/policies` : create a policy
 - **GET** `/members/<address>/claims` : get the list of previous claims of the member
 - **POST** `/members/<address>/claims` : create a claim
+
+
+## Run the tests
+
+Run `npm test`.
