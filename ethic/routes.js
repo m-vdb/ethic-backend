@@ -80,7 +80,7 @@ module.exports = {
             if (err) return next(err);
 
             // we do this call using our primary account, not the member's
-            contract.create_member(web3.toBigNumber(address), {from: web3.eth.accounts[0], gas: 1000000}, function (err) {
+            contract.create_member(address, function (err) {
               if (err) return next(err);
 
               member.activate(function (err) {
