@@ -1,6 +1,5 @@
 var web3 = require('web3'),
-    _ = require('underscore'),
-    sleep = require('sleep');
+    _ = require('underscore');
 
 
 module.exports = {
