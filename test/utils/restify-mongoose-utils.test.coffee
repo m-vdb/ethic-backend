@@ -30,6 +30,13 @@ describe 'restify-mongoose-utils', ->
       @req.getDocumentOr404(ApiUser, username: 'yup', @cb).then =>
         expect(@cb).to.have.been.calledWithMatch new restify.errors.NotFoundError()
 
+    it 'should return error if findOne returns error', ->
+      restifyMongoose(@req, @res, @next)
+      expect(@next).to.have.been.calledWith()
+      @sinon.stub(ApiUser, 'findOne').yields 'internal mongo error', null
+      @req.getDocumentOr404 ApiUser, username: 'yup', @cb
+      expect(@cb).to.have.been.calledWithMatch 'internal mongo error'
+
     it 'should return the document when found', ->
       restifyMongoose(@req, @res, @next)
       expect(@next).to.have.been.calledWith()
