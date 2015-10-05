@@ -6,8 +6,9 @@ module.exports = function () {
       if (typeof Document.findOne != 'function') {
         // 500
         cb(new restify.errors.InternalServerError('Bad Document type.'));
+        return;
       }
-      Document.findOne(params, function (err, doc) {
+      return Document.findOne(params, function (err, doc) {
         if (err) cb(err);
         else if (!doc) cb(new restify.errors.NotFoundError());
         else cb(null, doc);
