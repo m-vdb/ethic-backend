@@ -1,5 +1,6 @@
 var restify = require('restify'),
-    web3 = require('web3');
+    web3 = require('web3'),
+    _ = require('underscore');
 
 var settings = require('./settings.js'),
     ethUtils = require('./utils/eth.js'),
@@ -48,9 +49,15 @@ module.exports = {
    * Get member data.
    */
   member: function (req, res, next) {
-    // TODO (Mongo): return user former premium/deductible
-    res.send({});
-    return next();
+    // TODO: upgrade .isLength(24, 24) not available
+    req.assert('id', 'Invalid id').notEmpty().isHexadecimal();
+    req.getDocumentOr404(Member, {_id: req.params.id}, function (err, member) {
+      // FIXME: do we want to check active or not?
+      res.send(_.extend(member.toJSON(), {
+        contract: contract.members(member.address)
+      }));
+      return next();
+    });
   },
   /**
    * Accept a member. This is called after a background
