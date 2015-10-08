@@ -2,7 +2,7 @@ var web3 = require('web3'),
     _ = require('underscore');
 
 
-module.exports = {
+var ethUtils = module.exports = {
   createAccount: function (cb) {
     return web3.personal.newAccount('toto', cb);  // TODO: passphrase
   },
@@ -38,7 +38,6 @@ module.exports = {
     }, 1000)
   },
   makeMethod: function (contract, abi) {
-    var ethUtils = this;
     return function () {
       var args = Array.prototype.slice.call(arguments),
           cb = ethUtils.extractCallback(args),
@@ -59,7 +58,6 @@ module.exports = {
     };
   },
   makeAccessor: function (contract, abi) {
-    var ethUtils = this;
     return function () {
       var value = contract[abi.name].apply(contract, arguments);
       return ethUtils.formatOutput(value, abi.outputs);
