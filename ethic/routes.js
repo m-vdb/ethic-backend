@@ -84,7 +84,6 @@ module.exports = {
           if (err) return next(err);
 
           // we do this call using our primary account, not the member's
-          console.log('method: ', contract.create_member);
           contract.create_member(address, function (err) {
             if (err) return next(err);
 
