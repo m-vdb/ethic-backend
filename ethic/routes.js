@@ -4,7 +4,7 @@ var restify = require('restify'),
 var settings = require('./settings.js'),
     ethUtils = require('./utils/eth.js'),
     Member = require('./models/member.js'),
-    Contract = require('./models/contract.js');
+    contract = require('./models/contract.js');
 
 module.exports = {
   home: function (req, res, next) {
@@ -76,19 +76,16 @@ module.exports = {
         member.save(function (err) {
           if (err) return next(err);
 
-          Contract.getMain(function (err, contract) {
+          // we do this call using our primary account, not the member's
+          console.log('method: ', contract.create_member);
+          contract.create_member(address, function (err) {
             if (err) return next(err);
 
-            // we do this call using our primary account, not the member's
-            contract.create_member(address, function (err) {
+            member.activate(function (err) {
               if (err) return next(err);
 
-              member.activate(function (err) {
-                if (err) return next(err);
-
-                res.send({address: address});
-                next();
-              });
+              res.send({address: address});
+              next();
             });
           });
         });
