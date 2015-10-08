@@ -8,8 +8,8 @@ var web3Admin = require('./utils/web3-admin.js'),
     settings = require('./settings.js'),
     routes = require('./routes.js'),
     auth = require('./auth.js'),
-    restifyUtils = require('./utils/restify-utils'),
-    restifyMongooseUtils = require('./utils/restify-mongoose-utils');
+    restifyUtils = require('./utils/restify'),
+    restifyMongooseUtils = require('./utils/restify-mongoose');
 
 web3.setProvider(new web3.providers.HttpProvider('http://localhost:8545'));
 web3Admin();  // required to use admin calls

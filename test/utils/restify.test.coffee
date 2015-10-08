@@ -3,7 +3,7 @@ chai = require 'chai'
 expect = chai.expect
 
 restify = require 'restify'
-restifyUtils = require('../../ethic/utils/restify-utils.js')()
+restifyUtils = require('../../ethic/utils/restify.js')()
 
 describe 'restify-utils', ->
   beforeEach ->

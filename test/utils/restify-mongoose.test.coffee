@@ -3,7 +3,7 @@ chai = require 'chai'
 expect = chai.expect
 
 restify = require 'restify'
-restifyMongoose = require('../../ethic/utils/restify-mongoose-utils.js')()
+restifyMongoose = require('../../ethic/utils/restify-mongoose.js')()
 ApiUser = require '../../ethic/models/api_user.js'
 
 describe 'restify-mongoose-utils', ->
