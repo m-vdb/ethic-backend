@@ -17,13 +17,21 @@ var ethUtils = module.exports = {
     if (_.isArray(value)) {  // works for structs
       var obj = {};
       _.each(value, function (val, index) {
-        obj[outputsConfig[index].name] = this.formatOutput(val);
+        obj[outputsConfig[index].name] = this.formatOutput(val, [outputsConfig[index]]);
       }, this);
       return obj;
     }
 
-    if (_.isObject(value)) return value.c[0];  // works with uint
-    return value;  // works with addresses
+    if (_.isObject(value)) {
+      return value.c[0];  // works with uint
+    }
+
+    if (outputsConfig && outputsConfig.length) {
+      // strings
+      if (outputsConfig[0].type == 'bytes') return web3.toAscii(value);
+    }
+    // address and default
+    return value;
   },
   blockUntilTransactionDone: function (txHash, cb) {
     var receipt, waited = 0, maxWait = 20;

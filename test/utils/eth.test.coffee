@@ -41,8 +41,11 @@ describe 'eth', ->
       expect(ethUtils.getOptions()).to.be.like from: web3.eth.accounts[0]
 
   describe 'formatOutput', ->
-    it 'should do nothing with strings', ->
-      expect(ethUtils.formatOutput '0x528136').to.be.equal '0x528136'
+    it 'should use toAscii for bytes', ->
+      expect(ethUtils.formatOutput '0x70657567656f74', [type: 'bytes']).to.be.equal 'peugeot'
+
+    it 'should return address as is', ->
+      expect(ethUtils.formatOutput '0x70657567656f74', [type: 'address']).to.be.equal '0x70657567656f74'
 
     it 'should do nothing with ints', ->
       expect(ethUtils.formatOutput 2134).to.be.equal 2134
@@ -51,11 +54,15 @@ describe 'eth', ->
       expect(ethUtils.formatOutput {key: 'value', c: [12354]}).to.be.equal 12354
 
     it 'should format each element of an array according to the ABI config', ->
-      abiOutputs = [{name: 'created_at'}, {name: 'id'}]
-      obj = [{key: 'value', c: [12354]}, '0x123164521']
+      abiOutputs = [{name: 'created_at'}, {name: 'id'}, {name: 'make', type: 'bytes'}]
+      obj = [{key: 'value', c: [12354]}, '0x123164521', '0x7465736c61']
       expect(ethUtils.formatOutput obj, abiOutputs).to.be.like
         id: '0x123164521'
         created_at: 12354
+        make: 'tesla'
+
+    it 'should not bug if no outputsConfig is passed', ->
+      expect(ethUtils.formatOutput '0x123164521').to.be.equal '0x123164521'
 
   describe 'makeAccessor', ->
 
