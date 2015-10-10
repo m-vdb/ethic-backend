@@ -1,4 +1,3 @@
-sinon = require 'sinon'
 chai = require 'chai'
 expect = chai.expect
 
@@ -7,7 +6,6 @@ Contract = require('../../ethic/models/contract.js').Contract
 
 describe 'Member', ->
   beforeEach ->
-    @sinon = sinon.sandbox.create()
     @sinon.stub ethUtils, 'makeAccessor', () -> ((x) -> x)
     @sinon.stub ethUtils, 'makeMethod', () -> ((x) -> x)
     @contract = new Contract
@@ -34,9 +32,6 @@ describe 'Member', ->
           type: "function"
         }
       ]
-
-  afterEach ->
-    @sinon.restore()
 
   describe '_attachAbi', ->
     it 'should bind functions properly', ->

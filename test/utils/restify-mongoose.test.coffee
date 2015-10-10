@@ -1,4 +1,3 @@
-sinon = require 'sinon'
 chai = require 'chai'
 expect = chai.expect
 
@@ -8,13 +7,9 @@ ApiUser = require '../../ethic/models/api_user.js'
 
 describe 'restify-mongoose-utils', ->
   beforeEach ->
-    @sinon = sinon.sandbox.create()
     @req = {}
     @next = @sinon.spy()
     @cb = @sinon.spy()
-
-  afterEach ->
-    @sinon.restore()
 
   describe 'getDocumentOr404', ->
 

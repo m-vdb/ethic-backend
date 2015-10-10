@@ -1,3 +1,4 @@
+sinon = require 'sinon'
 _ = require 'underscore'
 mongoose = require 'mongoose'
 hippie = require 'hippie'
@@ -10,7 +11,11 @@ before ->
     mongoose.connect settings.mongoUri, settings.mongoOptions
 
 beforeEach ->
+  @sinon = sinon.sandbox.create()
   @api = hippie server
+
+afterEach ->
+  @sinon.restore()
 
 after ->
   if mongoose.connection.readyState > 0

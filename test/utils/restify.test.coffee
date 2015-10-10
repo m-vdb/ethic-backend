@@ -1,4 +1,3 @@
-sinon = require 'sinon'
 chai = require 'chai'
 expect = chai.expect
 
@@ -7,13 +6,9 @@ restifyUtils = require('../../ethic/utils/restify.js')()
 
 describe 'restify-utils', ->
   beforeEach ->
-    @sinon = sinon.sandbox.create()
     @req = validationErrors: @sinon.stub()
     @res = send: @sinon.spy()
     @next = @sinon.spy()
-
-  afterEach ->
-    @sinon.restore()
 
   describe 'sendValidationErrorIfAny', ->
 

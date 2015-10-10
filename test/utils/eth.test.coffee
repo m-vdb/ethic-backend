@@ -1,4 +1,3 @@
-sinon = require 'sinon'
 chai = require 'chai'
 expect = chai.expect
 
@@ -8,15 +7,10 @@ ethUtils = require '../../ethic/utils/eth.js'
 
 describe 'eth', ->
   beforeEach ->
-    @sinon = sinon.sandbox.create()
     @clock = @sinon.useFakeTimers()
     @sinon.stub web3, 'eth',
       accounts: ['0x123456678910']
       getTransactionReceipt: @sinon.stub()
-
-
-  afterEach ->
-    @sinon.restore()
 
   describe 'createAccount', ->
 
