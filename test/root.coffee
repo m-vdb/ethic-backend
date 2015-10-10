@@ -6,9 +6,11 @@ settings = require '../ethic/settings.js'
 server = require '../ethic/index.js'
 
 before ->
-  @api = hippie server
   if mongoose.connection.readyState == 0
     mongoose.connect settings.mongoUri, settings.mongoOptions
+
+beforeEach ->
+  @api = hippie server
 
 after ->
   if mongoose.connection.readyState > 0
