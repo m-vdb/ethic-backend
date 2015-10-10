@@ -5,7 +5,7 @@ var restify = require('restify'),
 var settings = require('./settings.js'),
     ethUtils = require('./utils/eth.js'),
     Member = require('./models/member.js'),
-    contract = require('./models/contract.js');
+    contract = require('./models/contract.js').main;
 
 module.exports = {
   home: function (req, res, next) {

@@ -6,6 +6,7 @@ var contractData = require('../data/contract.json'),
 
 function Contract (data) {
   _.extend(this, data);
+  this._contract = this.ethereumContract();
   this._attachAbi();
 }
 
@@ -16,10 +17,9 @@ _.extend(Contract.prototype, {
   },
 
   _attachAbi: function () {
-    var contract = this.ethereumContract();
     _.each(this.abi, function (abi) {
       var factory = abi.constant ? ethUtils.makeAccessor : ethUtils.makeMethod,
-          method = factory(contract, abi),
+          method = factory(this._contract, abi),
           methodName = abi.name;
 
       Contract.prototype[methodName] = method;
@@ -30,4 +30,7 @@ _.extend(Contract.prototype, {
 
 var main = new Contract(contractData);
 
-module.exports = main;
+module.exports = {
+  Contract: Contract,
+  main: main
+};
