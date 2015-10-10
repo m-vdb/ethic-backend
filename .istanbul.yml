@@ -5,7 +5,7 @@ instrumentation:
         - .js
         - .coffee
     default-excludes: true
-    excludes: []
+    excludes: ['routes.js']
     embed-source: false
     variable: __coverage__
     compact: true
