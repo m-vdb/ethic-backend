@@ -5,4 +5,6 @@ chai.use(sinonChai);
 chai.use(chaiFuzzy);
 
 var web3Admin = require('../ethic/utils/web3-admin.js');
+var settings = require('../ethic/settings.js');
 web3Admin();
+settings.mongoUri = 'mongodb://localhost/ethic-test';
