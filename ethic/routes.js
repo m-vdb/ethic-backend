@@ -117,15 +117,14 @@ module.exports = {
       if (err) return next(err);
       if (!member.isActive()) return next(new restify.errors.BadRequestError('Account is not active.'));
 
-      var policyCount = contract.get_number_of_policies(member.address);
-      var policies = [];
-      if (policyCount > 0) {
-        for (var i = 0; i < policyCount; i++) {
-          policies.push(contract.policies(member.address, i));
-        }
-      }
-      res.send(policies);
-      return next();
+      member.getPolicies(function (err, policies) {
+        if (err) return next(err);
+
+        res.send(_.map(policies, function (policy) {
+          return policy.toJSON();
+        }));
+        next();
+      });
     });
   },
   /**
