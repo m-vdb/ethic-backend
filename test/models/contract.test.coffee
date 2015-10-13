@@ -4,7 +4,7 @@ expect = chai.expect
 ethUtils = require '../../ethic/utils/eth.js'
 Contract = require('../../ethic/models/contract.js').Contract
 
-describe 'Member', ->
+describe 'Contract', ->
   beforeEach ->
     @sinon.stub ethUtils, 'makeAccessor', () -> ((x) -> x)
     @sinon.stub ethUtils, 'makeMethod', () -> ((x) -> x)
@@ -59,3 +59,25 @@ describe 'Member', ->
         type: "function"
       expect(@contract.members).to.be.ok
       expect(@contract.members).to.be.a.function
+
+  describe 'new_member', ->
+
+    it 'should create an account and call the crete_member method', ->
+      @sinon.stub ethUtils, 'createAccount', (cb) -> cb(null, '0x007')
+      @sinon.stub @contract, 'create_member', (a, c, cb) -> cb(null, a)
+
+      @contract.new_member (err, address) =>
+        expect(err).to.be.null
+        expect(address).to.be.equal '0x007'
+        expect(ethUtils.createAccount).to.have.been.called
+        expect(@contract.create_member).to.have.been.calledWithMatch '0x007', 1
+
+    it 'should fail if couldnt create account', ->
+      @sinon.stub ethUtils, 'createAccount', (cb) -> cb('the error')
+      @sinon.stub @contract, 'create_member'
+
+      @contract.new_member (err, address) =>
+        expect(err).to.be.equal 'the error'
+        expect(address).to.be.undefined
+        expect(ethUtils.createAccount).to.have.been.called
+        expect(@contract.create_member).to.not.have.been.called

@@ -25,6 +25,18 @@ _.extend(Contract.prototype, {
       Contract.prototype[methodName] = method;
     }, this)
     return this;
+  },
+
+  new_member: function (cb) {
+    var contract = this;
+    // we do this call using our primary account
+    ethUtils.createAccount(function (err, address) {
+      if (err) return cb(err);
+
+      contract.create_member(address, 1, function (err) {
+        cb(err, address);
+      });
+    });
   }
 });
 
