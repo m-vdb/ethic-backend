@@ -3,6 +3,7 @@
   "private": true,
   "dependencies": {
     "mongoose": "4.1.6",
+    "mongoose-schema-extend": "0.1.7",
     "passport": "0.3.0",
     "passport-http": "0.3.0",
     "restify": "4.0.2",
