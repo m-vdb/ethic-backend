@@ -9,7 +9,7 @@ var settings = require('./settings.js'),
 
 module.exports = {
   home: function (req, res, next) {
-    res.send({
+    res.json({
       "name": "ethic",
       "version": settings.version
     });
@@ -39,7 +39,7 @@ module.exports = {
       if (err) {
         return next(err);
       }
-      res.send({
+      res.json({
         id: member._id
       });
       return next();
@@ -53,7 +53,7 @@ module.exports = {
     req.assert('id', 'Invalid id').notEmpty().isHexadecimal();
     req.getDocumentOr404(Member, {_id: req.params.id}, function (err, member) {
       // FIXME: do we want to check active or not?
-      res.send(_.extend(member.toJSON(), {
+      res.json(_.extend(member.toJSON(), {
         contract: contract.members(member.address)
       }));
       return next();
@@ -77,7 +77,7 @@ module.exports = {
       member.activate(function (err) {
         if (err) return next(err);
 
-        res.send(member.toJSON());
+        res.json(member.toJSON());
         next();
       });
     });
@@ -98,7 +98,7 @@ module.exports = {
       if (member.isNotNew()) return next(new restify.errors.BadRequestError('Account is not new.'));
 
       member.deny(function (err) {
-        res.send({});
+        res.json({});
         next(err);
       });
     });
@@ -120,7 +120,7 @@ module.exports = {
       member.getPolicies(function (err, policies) {
         if (err) return next(err);
 
-        res.send(_.map(policies, function (policy) {
+        res.json(_.map(policies, function (policy) {
           return policy.toJSON();
         }));
         next();
@@ -165,7 +165,7 @@ module.exports = {
   memberClaims: function (req, res, next) {
     // TODO (Ethereum):
     // - retrieve a list of all the member's claims
-    res.send([]);
+    res.json([]);
     return next();
   },
   /**
@@ -175,7 +175,7 @@ module.exports = {
     // TODO (Ethereum):
     // - create a claim on ethereum contract
     // - return the claim data
-    res.send({});
+    res.json({});
     return next();
   }
 };
