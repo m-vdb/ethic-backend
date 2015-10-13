@@ -26,6 +26,9 @@ memberSchema.method({
   deny: function (cb) {
     this.state = 'denied';
     this.save(cb);
+  },
+  getPolicies: function (cb) {
+    mongoose.model('Policy').find({member: this._id}, cb);
   }
 });
 
