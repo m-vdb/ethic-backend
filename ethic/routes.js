@@ -74,27 +74,11 @@ module.exports = {
       if (err) return next(err);
       if (member.isNotNew()) return next(new restify.errors.BadRequestError('Account is not new.'));
 
-      // create an ethereum account and bind the address on the member
-      var account = ethUtils.createAccount(function (err, address) {
+      member.activate(function (err) {
         if (err) return next(err);
 
-        console.log("created account", address);
-        member.address = address;
-        member.save(function (err) {
-          if (err) return next(err);
-
-          // we do this call using our primary account, not the member's
-          contract.create_member(address, function (err) {
-            if (err) return next(err);
-
-            member.activate(function (err) {
-              if (err) return next(err);
-
-              res.send({address: address});
-              next();
-            });
-          });
-        });
+        res.send(member.toJSON());
+        next();
       });
     });
   },
