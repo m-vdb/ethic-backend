@@ -1,10 +1,13 @@
 var mongoose = require('mongoose');
 require('mongoose-schema-extend');
 
+var settings = require('../settings.js');
+
 var policySchema = new mongoose.Schema({
   member: {type: mongoose.Schema.Types.ObjectId, ref: 'Member'},
   initial_premium: Number,
-  initial_deductible: Number
+  initial_deductible: Number,
+  contractType: {type: String, enum: settings.contractTypes}
 }, {
   collection: 'policies',
   discriminatorKey: '_type'
