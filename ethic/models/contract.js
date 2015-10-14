@@ -1,7 +1,7 @@
 var _ = require('underscore'),
     web3 = require('web3');
 
-var contractData = require('../data/contract.json'),
+var contractData = require('../contracts'),
     ethUtils = require('../utils/eth.js');
 
 function Contract (data) {
@@ -40,9 +40,11 @@ _.extend(Contract.prototype, {
   }
 });
 
-var main = new Contract(contractData);
-
 module.exports = {
   Contract: Contract,
-  main: main
+  contracts: {}
 };
+
+_.each(contractData, function (data, name) {
+  module.exports.contracts[name] = new Contract(data);
+});
