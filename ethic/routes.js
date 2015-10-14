@@ -5,7 +5,9 @@ var restify = require('restify'),
 var settings = require('./settings.js'),
     ethUtils = require('./utils/eth.js'),
     Member = require('./models/member.js'),
-    contract = require('./models/contract.js').main;
+    contract = require('./models/contract.js').main,
+    Policy = require('./models/policy.js').Policy;
+
 
 module.exports = {
   home: function (req, res, next) {
@@ -25,20 +27,17 @@ module.exports = {
     req.assert('firstName', 'Invalid firstName').notEmpty().isAlpha();
     req.assert('lastName', 'Invalid lastName').notEmpty().isAlpha();
     req.assert('email', 'Invalid email').notEmpty().isEmail();
-    if (req.sendValidationErrorIfAny()) {
-      return next();
-    }
+    if (req.sendValidationErrorIfAny()) return next();
 
     var member = new Member({
       ssn: req.params.ssn,
       firstName: req.params.firstName,
       lastName: req.params.lastName,
-      email: req.params.email,
+      email: req.params.email
     });
     member.save(function (err) {
-      if (err) {
-        return next(err);
-      }
+      if (err) return next(err);
+
       res.json({
         id: member._id
       });
@@ -51,7 +50,10 @@ module.exports = {
   member: function (req, res, next) {
     // TODO: upgrade .isLength(24, 24) not available
     req.assert('id', 'Invalid id').notEmpty().isHexadecimal();
+    if (req.sendValidationErrorIfAny()) return next();
+
     req.getDocumentOr404(Member, {_id: req.params.id}, function (err, member) {
+      if (err) return next(err);
       // FIXME: do we want to check active or not?
       res.json(_.extend(member.toJSON(), {
         contract: contract.members(member.address)
@@ -66,19 +68,15 @@ module.exports = {
   acceptMember: function (req, res, next) {
     // TODO: upgrade .isLength(24, 24) not available
     req.assert('id', 'Invalid id').notEmpty().isHexadecimal();
-    if (req.sendValidationErrorIfAny()) {
-      return next();
-    }
+    if (req.sendValidationErrorIfAny()) return next();
 
     req.getDocumentOr404(Member, {_id: req.params.id}, function (err, member) {
       if (err) return next(err);
       if (member.isNotNew()) return next(new restify.errors.BadRequestError('Account is not new.'));
 
       member.activate(function (err) {
-        if (err) return next(err);
-
-        res.json(member.toJSON());
-        next();
+        res.json({});
+        next(err);
       });
     });
   },
@@ -89,9 +87,7 @@ module.exports = {
   denyMember: function (req, res, next) {
     // TODO: upgrade .isLength(24, 24) not available
     req.assert('id', 'Invalid id').notEmpty().isHexadecimal();
-    if (req.sendValidationErrorIfAny()) {
-      return next();
-    }
+    if (req.sendValidationErrorIfAny()) return next();
 
     req.getDocumentOr404(Member, {_id: req.params.id}, function (err, member) {
       if (err) return next(err);
