@@ -149,7 +149,6 @@ describe 'routes', ->
         .end done
 
     it 'should return 200 with the right body otherwise', (done) ->
-      @sinon.stub contract, 'members', -> {key: 'value', yeah: 'bro'}
       @api
         .get '/members/' + @member._id.toString()
         .json()
@@ -163,9 +162,7 @@ describe 'routes', ->
           email: "donaldtrump@asshole.com"
           address: "0x007"
           state: 'active'
-          contract:
-            key: 'value'
-            yeah: 'bro'
+          contractTypes: []
         .end done
 
   describe 'acceptMember', ->

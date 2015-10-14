@@ -5,7 +5,7 @@ var restify = require('restify'),
 var settings = require('./settings.js'),
     ethUtils = require('./utils/eth.js'),
     Member = require('./models/member.js'),
-    contract = require('./models/contract.js').main,
+    contracts = require('./models/contract.js').contracts,
     Policy = require('./models/policy.js').Policy;
 
 
@@ -54,10 +54,8 @@ module.exports = {
 
     req.getDocumentOr404(Member, {_id: req.params.id}, function (err, member) {
       if (err) return next(err);
-      // FIXME: do we want to check active or not?
-      res.json(_.extend(member.toJSON(), {
-        contract: contract.members(member.address)
-      }));
+
+      res.json(member.toJSON());
       return next();
     });
   },
