@@ -1,13 +1,17 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose'),
+    _ = require('underscore');
 
+var contracts = _.keys(require('../contracts'));
 var states = ['new', 'active', 'inactive', 'denied'];
+
 var memberSchema = new mongoose.Schema({
   firstName: String,
   lastName: String,
   ssn: {type: String, index: {unique: true}},  // TODO: number
   email: {type: String, index: {unique: true}},
   state: {type: String, default: 'new', enum: states},
-  address: String
+  address: String,
+  contractTypes: [{type: String, enum: contracts}]
 }, {
   collection: 'members'
 });
