@@ -127,30 +127,56 @@ module.exports = {
   createMemberPolicy: function (req, res, next) {
     // TODO: upgrade .isLength(24, 24) not available
     req.assert('id', 'Invalid id').notEmpty().isHexadecimal();
-    req.assert('car_year', 'Invalid car year').notEmpty().isInt();
-    req.assert('car_make', 'Invalid car make').notEmpty();
-    req.assert('car_model', 'Invalid car model').notEmpty();
-    req.assert('initial_premium', 'Invalid initial premium').notEmpty().isInt();
-    req.assert('initial_deductible', 'Invalid initial deductible').notEmpty().isInt();
-    if (req.sendValidationErrorIfAny()) {
-      return next();
+    req.assert('type', 'Invalid type').notEmpty().isIn(Policy.getPolicyTypes());
+    req.assert('contractType', 'Invalid contractType').notEmpty().isIn(settings.contractTypes);
+    if (req.sendValidationErrorIfAny()) return next();
+
+    // get policy model class
+    try {
+      var PolicyModel = Policy.modelFromType(req.params.type);
+    }
+    catch (e) {
+      return next(new restify.errors.BadRequestError('Bad policy type.'));
     }
 
     req.getDocumentOr404(Member, {_id: req.params.id}, function (err, member) {
       if (err) return next(err);
       if (!member.isActive()) return next(new restify.errors.BadRequestError('Account is not active.'));
 
-      contract.add_policy(
-        member.address, req.params.car_year,
-        req.params.car_make, req.params.car_model,
-        req.params.initial_premium, req.params.initial_deductible,
-        function (err) {
+      var policy = new PolicyModel(_.extend(req.params, {member: member._id}));
+      policy.save(function (err) {
+        if (err) return next(new restify.errors.BadRequestError(err.message));
+
+        function finalCallback (err) {
           if (err) return next(err);
 
-          res.send({id: contract.get_number_of_policies(member.address) - 1});
+          res.json({id: policy._id});
           return next();
         }
-      );
+
+        var contract = contracts[policy.contractType];
+        // if member has no address, then create it in ehtereum
+        // (policy count is set to 1 by default)
+        if (!member.hasContract(policy.contractType)) {
+          // member already has an ethereum account
+          if (member.address) {
+            contract.create_member(member.address, 1, finalCallback);
+          }
+          // first policy for a member
+          else {
+            contract.new_member(function (err, address) {
+              if (err) return next(err);
+
+              member.address = address;
+              member.save(finalCallback);
+            });
+          }
+        }
+        // otherwise just add it
+        else {
+          contract.add_policy(member.address, finalCallback);
+        }
+      })
     });
   },
   /**
