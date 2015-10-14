@@ -1,7 +1,7 @@
 var mongoose = require('mongoose'),
     _ = require('underscore');
 
-var contracts = _.keys(require('../contracts'));
+var settings = require('../settings.js');
 var states = ['new', 'active', 'inactive', 'denied'];
 
 var memberSchema = new mongoose.Schema({
@@ -11,7 +11,7 @@ var memberSchema = new mongoose.Schema({
   email: {type: String, index: {unique: true}},
   state: {type: String, default: 'new', enum: states},
   address: String,
-  contractTypes: [{type: String, enum: contracts}]
+  contractTypes: [{type: String, enum: settings.contractTypes}]
 }, {
   collection: 'members'
 });
@@ -33,6 +33,9 @@ memberSchema.method({
   },
   getPolicies: function (cb) {
     mongoose.model('Policy').find({member: this._id}, cb);
+  },
+  hasContract: function (contractType) {
+    return _.contains(this.contractTypes, contractType);
   }
 });
 

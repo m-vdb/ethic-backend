@@ -73,3 +73,12 @@ describe 'Member', ->
           expect(policies).to.have.length 1
           expect(policies[0].toJSON()).to.be.like @policy.toJSON()
           @policy.remove done
+
+  describe 'hasContract', ->
+    it 'should return true if member is already on contract', ->
+      @member.contractTypes = ['ca']
+      expect(@member.hasContract 'ca').to.be.true
+
+    it 'should return false if not', ->
+      @member.contractTypes = ['ca']
+      expect(@member.hasContract 'or').to.be.false
