@@ -313,3 +313,17 @@ describe 'routes', ->
           }
         ]
         .end done
+
+    describe 'memberClaims', ->
+      it 'should be dummy', (done) ->
+        @api
+          .get '/members/toto/claims'
+          .expectStatus 200
+          .end done
+
+    describe 'createMemberClaims', ->
+      it 'should be dummy', (done) ->
+        @api
+          .post '/members/toto/claims'
+          .expectStatus 200
+          .end done
