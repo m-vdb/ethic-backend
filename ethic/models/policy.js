@@ -22,6 +22,9 @@ policySchema.static({
       if (e instanceof mongoose.Error.MissingSchemaError) throw new Error('Unknown policy type: ' + type);
       throw e;  // throw back other errors
     }
+  },
+  getPolicyTypes: function () {
+    return ['CarPolicy'];
   }
 });
 
