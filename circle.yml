@@ -1,3 +1,7 @@
 test:
   post:
     - ./node_modules/istanbul/lib/cli.js check-coverage
+
+general:
+  artifacts:
+    - ./coverage
