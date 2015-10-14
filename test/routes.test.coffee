@@ -5,6 +5,7 @@ expect = chai.expect
 ObjectId = require('mongoose').Types.ObjectId
 settings = require '../ethic/routes.js'
 Member = require '../ethic/models/member.js'
+Policy = require('../ethic/models/policy.js').Policy
 contract = require('../ethic/models/contract.js').main
 
 describe 'routes', ->
@@ -249,3 +250,66 @@ describe 'routes', ->
               throw err if err
               expect(member.state).to.be.equal 'denied'
               done()
+
+  describe 'memberPolicies', ->
+    beforeEach (done) ->
+      @policy = new Policy
+        member: @member._id
+        initial_premium: 5000
+        initial_deductible: 50000
+      @policy.save done
+
+    afterEach (done) ->
+      @policy.remove done
+
+    it 'should return 404 if member does not exist', (done) ->
+      @api
+        .get '/members/000000000000000000000000/policies'
+        .json()
+        .expectStatus 404
+        .end done
+
+    it 'should return 400 if member id is invalid', (done) ->
+      @api
+        .get '/members/dayum/policies'
+        .json()
+        .expectStatus 400
+        .end done
+
+    it 'should return 400 if account is not active', (done) ->
+      @member.state = 'new'
+      @member.save (err) =>
+        throw err if err
+
+        @api
+          .get '/members/' + @member._id.toString() + '/policies'
+          .json()
+          .expectStatus 400
+          .expectBody
+            code: 'BadRequestError'
+            message: 'Account is not active.'
+          .end done
+
+    it 'should return a 400 if couldnt retrieve policies', (done) ->
+      @sinon.stub Member::, 'getPolicies', (cb) -> cb('cannot get policies')
+      @api
+        .get '/members/' + @member._id.toString() + '/policies'
+        .json()
+        .expectStatus 500
+        .end done
+
+    it 'should return a list of policies otherwise', (done) ->
+      @api
+        .get '/members/' + @member._id.toString() + '/policies'
+        .json()
+        .expectStatus 200
+        .expectBody [
+          {
+            _id: @policy._id.toString(),
+            member: @member._id.toString(),
+            initial_premium: 5000,
+            initial_deductible: 50000,
+            __v: 0
+          }
+        ]
+        .end done
