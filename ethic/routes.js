@@ -150,8 +150,12 @@ module.exports = {
         function finalCallback (err) {
           if (err) return next(err);
 
-          res.json({id: policy._id});
-          return next();
+          member.addContractType(policy.contractType, function (err) {
+            if (err) return next(err);
+
+            res.json({id: policy._id});
+            return next();
+          });
         }
 
         var contract = contracts[policy.contractType];
@@ -168,7 +172,7 @@ module.exports = {
               if (err) return next(err);
 
               member.address = address;
-              member.save(finalCallback);
+              finalCallback();
             });
           }
         }

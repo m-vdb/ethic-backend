@@ -468,6 +468,7 @@ describe 'routes', ->
             Member.findOne _id: @member._id, (err, member) ->
               throw 'error' if err or not member
               expect(member.address).to.be.equal '0x008'
+              expect(member.contractTypes).to.be.like ['ca']
               CarPolicy.findOne car_model: 'roadster4', (err, policy) ->
                 throw 'error' if err or not policy
                 expect(body.id).to.be.equal policy._id.toString()
@@ -517,6 +518,25 @@ describe 'routes', ->
             throw err if err
             expect(contracts.ca.create_member).to.have.been.calledWithMatch '0x007', 1
             done()
+
+      it 'should return 500 if couldnt save the contract type on the member', (done) ->
+        @sinon.stub contracts.ca, 'new_member', (cb) -> cb(null, '0x008')
+        @sinon.stub Member::, 'addContractType', (t, cb) -> cb('oups')
+        @member.address = null
+        @member.save (err) =>
+          throw err if err
+
+          @api
+          .post '/members/' + @member._id.toString() + '/policies'
+          .json()
+          .send
+            type: 'CarPolicy'
+            contractType: 'ca'
+            car_year: 2015
+            car_make: 'tesla'
+            car_model: 'roadster10'
+          .expectStatus 500
+          .end done
 
     describe 'memberClaims', ->
       it 'should be dummy', (done) ->
