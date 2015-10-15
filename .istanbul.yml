@@ -5,7 +5,7 @@ instrumentation:
         - .js
         - .coffee
     default-excludes: true
-    excludes: ['routes.js']
+    excludes: []
     embed-source: false
     variable: __coverage__
     compact: true
@@ -41,14 +41,14 @@ hooks:
     handle-sigint: false
 check:
     global:
-        statements: 0
-        lines: 0
-        branches: 0
-        functions: 0
+        statements: 100
+        lines: 100
+        branches: 100
+        functions: 100
         excludes: []
     each:
-        statements: 0
-        lines: 0
-        branches: 0
-        functions: 0
+        statements: 100
+        lines: 100
+        branches: 100
+        functions: 100
         excludes: []

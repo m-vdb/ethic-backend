@@ -5,11 +5,13 @@ var restify = require('restify'),
 var settings = require('./settings.js'),
     ethUtils = require('./utils/eth.js'),
     Member = require('./models/member.js'),
-    contract = require('./models/contract.js').main;
+    contracts = require('./models/contract.js').contracts,
+    Policy = require('./models/policy.js').Policy;
+
 
 module.exports = {
   home: function (req, res, next) {
-    res.send({
+    res.json({
       "name": "ethic",
       "version": settings.version
     });
@@ -25,21 +27,18 @@ module.exports = {
     req.assert('firstName', 'Invalid firstName').notEmpty().isAlpha();
     req.assert('lastName', 'Invalid lastName').notEmpty().isAlpha();
     req.assert('email', 'Invalid email').notEmpty().isEmail();
-    if (req.sendValidationErrorIfAny()) {
-      return next();
-    }
+    if (req.sendValidationErrorIfAny()) return next();
 
     var member = new Member({
       ssn: req.params.ssn,
       firstName: req.params.firstName,
       lastName: req.params.lastName,
-      email: req.params.email,
+      email: req.params.email
     });
     member.save(function (err) {
-      if (err) {
-        return next(err);
-      }
-      res.send({
+      if (err) return next(err);
+
+      res.json({
         id: member._id
       });
       return next();
@@ -51,11 +50,12 @@ module.exports = {
   member: function (req, res, next) {
     // TODO: upgrade .isLength(24, 24) not available
     req.assert('id', 'Invalid id').notEmpty().isHexadecimal();
+    if (req.sendValidationErrorIfAny()) return next();
+
     req.getDocumentOr404(Member, {_id: req.params.id}, function (err, member) {
-      // FIXME: do we want to check active or not?
-      res.send(_.extend(member.toJSON(), {
-        contract: contract.members(member.address)
-      }));
+      if (err) return next(err);
+
+      res.json(member.toJSON());
       return next();
     });
   },
@@ -66,35 +66,15 @@ module.exports = {
   acceptMember: function (req, res, next) {
     // TODO: upgrade .isLength(24, 24) not available
     req.assert('id', 'Invalid id').notEmpty().isHexadecimal();
-    if (req.sendValidationErrorIfAny()) {
-      return next();
-    }
+    if (req.sendValidationErrorIfAny()) return next();
 
     req.getDocumentOr404(Member, {_id: req.params.id}, function (err, member) {
       if (err) return next(err);
       if (member.isNotNew()) return next(new restify.errors.BadRequestError('Account is not new.'));
 
-      // create an ethereum account and bind the address on the member
-      var account = ethUtils.createAccount(function (err, address) {
-        if (err) return next(err);
-
-        console.log("created account", address);
-        member.address = address;
-        member.save(function (err) {
-          if (err) return next(err);
-
-          // we do this call using our primary account, not the member's
-          contract.create_member(address, function (err) {
-            if (err) return next(err);
-
-            member.activate(function (err) {
-              if (err) return next(err);
-
-              res.send({address: address});
-              next();
-            });
-          });
-        });
+      member.activate(function (err) {
+        res.json({});
+        next(err);
       });
     });
   },
@@ -105,16 +85,14 @@ module.exports = {
   denyMember: function (req, res, next) {
     // TODO: upgrade .isLength(24, 24) not available
     req.assert('id', 'Invalid id').notEmpty().isHexadecimal();
-    if (req.sendValidationErrorIfAny()) {
-      return next();
-    }
+    if (req.sendValidationErrorIfAny()) return next();
 
     req.getDocumentOr404(Member, {_id: req.params.id}, function (err, member) {
       if (err) return next(err);
       if (member.isNotNew()) return next(new restify.errors.BadRequestError('Account is not new.'));
 
       member.deny(function (err) {
-        res.send({});
+        res.json({});
         next(err);
       });
     });
@@ -133,15 +111,14 @@ module.exports = {
       if (err) return next(err);
       if (!member.isActive()) return next(new restify.errors.BadRequestError('Account is not active.'));
 
-      var policyCount = contract.get_number_of_policies(member.address);
-      var policies = [];
-      if (policyCount > 0) {
-        for (var i = 0; i < policyCount; i++) {
-          policies.push(contract.policies(member.address, i));
-        }
-      }
-      res.send(policies);
-      return next();
+      member.getPolicies(function (err, policies) {
+        if (err) return next(err);
+
+        res.json(_.map(policies, function (policy) {
+          return policy.toJSON();
+        }));
+        next();
+      });
     });
   },
   /**
@@ -150,30 +127,60 @@ module.exports = {
   createMemberPolicy: function (req, res, next) {
     // TODO: upgrade .isLength(24, 24) not available
     req.assert('id', 'Invalid id').notEmpty().isHexadecimal();
-    req.assert('car_year', 'Invalid car year').notEmpty().isInt();
-    req.assert('car_make', 'Invalid car make').notEmpty();
-    req.assert('car_model', 'Invalid car model').notEmpty();
-    req.assert('initial_premium', 'Invalid initial premium').notEmpty().isInt();
-    req.assert('initial_deductible', 'Invalid initial deductible').notEmpty().isInt();
-    if (req.sendValidationErrorIfAny()) {
-      return next();
+    req.assert('type', 'Invalid type').notEmpty().isIn(Policy.getPolicyTypes());
+    req.assert('contractType', 'Invalid contractType').notEmpty().isIn(settings.contractTypes);
+    if (req.sendValidationErrorIfAny()) return next();
+
+    // get policy model class
+    try {
+      var PolicyModel = Policy.modelFromType(req.params.type);
+    }
+    catch (e) {
+      return next(new restify.errors.BadRequestError('Bad policy type.'));
     }
 
     req.getDocumentOr404(Member, {_id: req.params.id}, function (err, member) {
       if (err) return next(err);
       if (!member.isActive()) return next(new restify.errors.BadRequestError('Account is not active.'));
 
-      contract.add_policy(
-        member.address, req.params.car_year,
-        req.params.car_make, req.params.car_model,
-        req.params.initial_premium, req.params.initial_deductible,
-        function (err) {
+      var policy = new PolicyModel(_.extend(req.params, {member: member._id}));
+      policy.save(function (err) {
+        if (err) return next(new restify.errors.BadRequestError(err.message));
+
+        function finalCallback (err) {
           if (err) return next(err);
 
-          res.send({id: contract.get_number_of_policies(member.address) - 1});
-          return next();
+          member.addContractType(policy.contractType, function (err) {
+            if (err) return next(err);
+
+            res.json({id: policy._id});
+            return next();
+          });
         }
-      );
+
+        var contract = contracts[policy.contractType];
+        // if member has no address, then create it in ehtereum
+        // (policy count is set to 1 by default)
+        if (!member.hasContract(policy.contractType)) {
+          // member already has an ethereum account
+          if (member.address) {
+            contract.create_member(member.address, 1, finalCallback);
+          }
+          // first policy for a member
+          else {
+            contract.new_member(function (err, address) {
+              if (err) return next(err);
+
+              member.address = address;
+              finalCallback();
+            });
+          }
+        }
+        // otherwise just add it
+        else {
+          contract.add_policy(member.address, finalCallback);
+        }
+      })
     });
   },
   /**
@@ -182,7 +189,7 @@ module.exports = {
   memberClaims: function (req, res, next) {
     // TODO (Ethereum):
     // - retrieve a list of all the member's claims
-    res.send([]);
+    res.json([]);
     return next();
   },
   /**
@@ -192,7 +199,7 @@ module.exports = {
     // TODO (Ethereum):
     // - create a claim on ethereum contract
     // - return the claim data
-    res.send({});
+    res.json({});
     return next();
   }
 };
