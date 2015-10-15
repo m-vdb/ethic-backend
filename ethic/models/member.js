@@ -36,6 +36,11 @@ memberSchema.method({
   },
   hasContract: function (contractType) {
     return _.contains(this.contractTypes, contractType);
+  },
+  addContractType: function (contractType, cb) {
+    if (this.hasContract(contractType)) return cb();
+    this.contractTypes.push(contractType);
+    this.save(cb);
   }
 });
 

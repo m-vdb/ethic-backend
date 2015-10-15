@@ -82,3 +82,16 @@ describe 'Member', ->
     it 'should return false if not', ->
       @member.contractTypes = ['ca']
       expect(@member.hasContract 'or').to.be.false
+
+  describe 'addContractType', ->
+    it 'should not add the contract type if already here', (done) ->
+      @member.contractTypes = ['ca']
+      @member.addContractType 'ca', =>
+        expect(@member.contractTypes).to.be.like ['ca']
+        done()
+
+  it 'should not add the contract type if already here', (done) ->
+      @member.contractTypes = ['ca']
+      @member.addContractType 'wa', =>
+        expect(@member.contractTypes).to.be.like ['ca', 'wa']
+        done()
