@@ -158,8 +158,7 @@ describe 'routes', ->
         .json()
         .expectStatus 200
         .expectBody
-          _id: @member._id.toString()
-          __v: 0
+          id: @member._id.toString()
           ssn: '7027321'
           firstName: "Donald"
           lastName: "Trump"
@@ -306,11 +305,10 @@ describe 'routes', ->
         .expectStatus 200
         .expectBody [
           {
-            _id: @policy._id.toString(),
+            id: @policy._id.toString(),
             member: @member._id.toString(),
             initial_premium: 5000,
-            initial_deductible: 50000,
-            __v: 0
+            initial_deductible: 50000
           }
         ]
         .end done

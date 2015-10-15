@@ -10,7 +10,14 @@ var policySchema = new mongoose.Schema({
   contractType: {type: String, enum: settings.contractTypes}
 }, {
   collection: 'policies',
-  discriminatorKey: '_type'
+  discriminatorKey: '_type',
+  toJSON: {
+    virtuals: true,
+    transform: function (doc, ret) {
+      delete ret._id;
+      delete ret.__v;
+    }
+  }
 });
 
 policySchema.static({

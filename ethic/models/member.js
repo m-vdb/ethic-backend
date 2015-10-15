@@ -13,7 +13,14 @@ var memberSchema = new mongoose.Schema({
   address: String,
   contractTypes: [{type: String, enum: settings.contractTypes}]
 }, {
-  collection: 'members'
+  collection: 'members',
+  toJSON: {
+    virtuals: true,
+    transform: function (doc, ret) {
+      delete ret._id;
+      delete ret.__v;
+    }
+  }
 });
 
 memberSchema.method({
