@@ -6,6 +6,12 @@ Ethic's backend code.
 
 ## Installation
 
+You'll need to be able to access a MongoDB and a Redis server. On Mac OSX, you can run:
+```bash
+$ brew install mongodb redis
+```
+After installation, to make sure the servers are booted properly, you can run separately `mongo` and `redis-cli` to connect to them.
+
 You should have node installed. You can use [nvm](https://github.com/creationix/nvm).
 Then you can do the following:
 ```bash
