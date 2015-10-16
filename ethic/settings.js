@@ -5,5 +5,9 @@ module.exports = {
   version: '0.0.1',
   mongoUri: 'mongodb://localhost/ethic',
   mongoOptions: {},
-  contractTypes: _.keys(require('./contracts'))
+  contractTypes: _.keys(require('./contracts')),
+  redisOptions: {
+    port: 6379,
+    host: '127.0.0.1'
+  }
 };
