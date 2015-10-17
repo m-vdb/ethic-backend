@@ -1,7 +1,7 @@
 var queues = require('../queues.js');
 
 
-function BaseTask (data) {
+function BaseTask () {
   this.taskName = this.constructor.name;
 }
 
@@ -16,10 +16,7 @@ BaseTask.delay = function (data, queue, cb) {
   queue = queue || 'main';
   var job = queues[queue]
     .create(this.name, data)
-    .save(function (err) {
-      if (!err) console.log("Task send:", job.id);
-      cb(err);
-    });
+    .save(cb);
 }
 
 // instance methods
@@ -32,7 +29,6 @@ BaseTask.prototype.run = function (data, cb) {
 
 // to override in sub classes
 BaseTask.prototype.process = function (data, cb) {
-  console.log('BaseTask yeah');
   cb();
 };
 
