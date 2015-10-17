@@ -3,7 +3,9 @@ _ = require 'underscore'
 mongoose = require 'mongoose'
 hippie = require 'hippie'
 BasicStrategy = require('passport-http').BasicStrategy
+kue = require 'kue'
 
+queues = require '../ethic/queues.js'
 settings = require '../ethic/settings.js'
 server = require '../ethic/index.js'
 
@@ -13,6 +15,9 @@ before ->
   @noauth = =>
     @sinon.stub BasicStrategy::, 'authenticate', ->
       this.success {user: 'toto'}
+  queues.dumb = kue.createQueue()
+  _.each queues, (queue) ->
+    queue.testMode.enter()
 
 beforeEach ->
   @sinon = sinon.sandbox.create()
@@ -20,8 +25,13 @@ beforeEach ->
 
 afterEach ->
   @sinon.restore()
+  _.each queues, (queue) ->
+    queue.testMode.clear()
 
 after ->
+  _.each queues, (queue) ->
+    queue.testMode.exit()
+  delete queues.dumb
   if mongoose.connection.readyState > 0
     _.each mongoose.connection.collections, (col, name) ->
       col.drop()
