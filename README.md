@@ -20,9 +20,10 @@ $ npm install .
 
 ## Developing
 
-To start the test server type:
+To start the server and the worker (which would process async tasks) type the following:
 ```bash
 $ npm start
+$ node worker.js
 ```
 
 ## Using the API
