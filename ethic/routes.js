@@ -128,7 +128,6 @@ module.exports = {
     // TODO: upgrade .isLength(24, 24) not available
     req.assert('id', 'Invalid id').notEmpty().isHexadecimal();
     req.assert('type', 'Invalid type').notEmpty().isIn(Policy.getPolicyTypes());
-    req.assert('contractType', 'Invalid contractType').notEmpty().isIn(settings.contractTypes);
     if (req.sendValidationErrorIfAny()) return next();
 
     // get policy model class
