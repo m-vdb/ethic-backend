@@ -67,4 +67,4 @@ describe 'CarPolicy', ->
           car_model: 'Corolla'
           car_model_id: 'corolla'
           car_year: 2015
-        done()
+        policy.remove done
