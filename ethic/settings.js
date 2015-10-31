@@ -9,5 +9,9 @@ module.exports = {
   redisOptions: {
     port: 6379,
     host: '127.0.0.1'
+  },
+  // TODO: have a system for settings
+  edmunds: {
+    apiKey: 'p4dhmf4sc2qgmukyydu7xtxg'
   }
 };
