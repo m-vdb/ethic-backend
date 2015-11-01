@@ -24,7 +24,6 @@ describe 'Policy', ->
       expect(policies.Policy.getPolicyTypes()).to.be.like ['CarPolicy']
 
 
-
 describe 'CarPolicy', ->
 
   describe 'pre(save)', ->
@@ -68,3 +67,22 @@ describe 'CarPolicy', ->
           car_model_id: 'corolla'
           car_year: 2015
         policy.remove done
+
+    it 'shouldnt call decodeVin if the policy is not new', (done) ->
+      @sinon.stub cars, 'decodeVin', (vin, cb) ->
+        cb null,
+          make: 'Toyota'
+          make_id: 'toyota'
+          model: 'Corolla'
+          model_id: 'corolla'
+          year: 2015
+      policy = new policies.CarPolicy
+        car_vin: '2A4GP54L06R601288'
+      policy.save (err) ->
+        expect(cars.decodeVin).to.have.been.calledWithMatch '2A4GP54L06R601288'
+        expect(err).to.be.null
+        policy.car_year = 2000
+        cars.decodeVin.reset()
+        policy.save ->
+          expect(cars.decodeVin).to.have.not.been.called
+          done()
