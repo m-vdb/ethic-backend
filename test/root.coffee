@@ -28,11 +28,13 @@ afterEach ->
   _.each queues, (queue) ->
     queue.testMode.clear()
 
-after ->
-  _.each queues, (queue) ->
-    queue.testMode.exit()
-  delete queues.dumb
-  if mongoose.connection.readyState > 0
-    _.each mongoose.connection.collections, (col, name) ->
-      col.drop()
-    mongoose.disconnect()
+after (done) ->
+  server.close ->
+    _.each queues, (queue) ->
+      queue.testMode.exit()
+    delete queues.dumb
+    if mongoose.connection.readyState > 0
+      _.each mongoose.connection.collections, (col, name) ->
+        col.drop()
+      mongoose.disconnect()
+    done()
