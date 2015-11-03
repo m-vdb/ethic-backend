@@ -3,12 +3,10 @@ chai = require 'chai'
 expect = chai.expect
 
 ObjectId = require('mongoose').Types.ObjectId
-settings = require '../ethic/routes.js'
+queues = require '../ethic/queues.js'
 Member = require '../ethic/models/member.js'
 policies = require '../ethic/models/policy.js'
-contracts = require '../ethic/models/contract.js'
-Contract = contracts.Contract
-contracts = contracts.contracts
+AddMemberPolicyTask = require('../ethic/tasks').AddMemberPolicyTask
 Policy = policies.Policy
 CarPolicy = policies.CarPolicy
 
@@ -395,146 +393,43 @@ describe 'routes', ->
             message: 'CarPolicy validation failed'
         .end done
 
-      it 'should return 200 and simply add the policy if member was already on contract', (done) ->
-        @sinon.stub contracts.ca, 'add_policy', (addr, cb) -> cb()
-        @member.contractTypes = ['ca']
-        @member.address = '0x007'
-        @member.save (err) =>
-          throw err if err
+      it 'should return 200 if it managed to create task', (done) ->
+        @api
+        .post '/members/' + @member._id.toString() + '/policies'
+        .json()
+        .send
+          type: 'CarPolicy'
+          contractType: 'ca'
+          car_year: 2015
+          car_make: 'tesla'
+          car_model: 'roadster4'
+        .expectStatus 200
+        .end (err, res, body) =>
+          done(err) if err
 
-          @api
-          .post '/members/' + @member._id.toString() + '/policies'
-          .json()
-          .send
-            type: 'CarPolicy'
+          expect(queues.main.testMode.jobs.length).to.be.equal 1
+          job = queues.main.testMode.jobs[0]
+          expect(job.type).to.be.equal 'AddMemberPolicyTask'
+          expect(job.data).to.be.like
             contractType: 'ca'
-            car_year: 2015
-            car_make: 'tesla'
-            car_model: 'roadster2'
-          .expectStatus 200
-          .end (err, res, body) =>
-            throw err if err
-            expect(contracts.ca.add_policy).to.have.been.calledWithMatch '0x007'
-            CarPolicy.findOne car_model: 'roadster2', (err, policy) ->
-              throw 'error' if err or not policy
-              expect(body.id).to.be.equal policy._id.toString()
-              done()
+            policyId: body.id
+          CarPolicy.findOne _id: body.id, (err, policy) ->
+            done(err) if err
+            done(if policy then null else new Error('policy not saved'))
 
-      it 'should return 200 and not create a new address if member had one', (done) ->
-        @sinon.stub contracts.ca, 'create_member', (addr, count, cb) -> cb()
-        @member.address = '0x007'
-        @member.save (err) =>
-          throw err if err
-
-          @api
-          .post '/members/' + @member._id.toString() + '/policies'
-          .json()
-          .send
-            type: 'CarPolicy'
-            contractType: 'ca'
-            car_year: 2015
-            car_make: 'tesla'
-            car_model: 'roadster3'
-          .expectStatus 200
-          .end (err, res, body) =>
-            throw err if err
-            expect(contracts.ca.create_member).to.have.been.calledWithMatch '0x007', 1
-            CarPolicy.findOne car_model: 'roadster3', (err, policy) ->
-              throw 'error' if err or not policy
-              expect(body.id).to.be.equal policy._id.toString()
-              done()
-
-      it 'should return 200 and create address + member if member had no address', (done) ->
-        @sinon.stub contracts.ca, 'new_member', (cb) -> cb(null, '0x008')
-        @member.address = null
-        @member.save (err) =>
-          throw err if err
-
-          @api
-          .post '/members/' + @member._id.toString() + '/policies'
-          .json()
-          .send
-            type: 'CarPolicy'
-            contractType: 'ca'
-            car_year: 2015
-            car_make: 'tesla'
-            car_model: 'roadster4'
-          .expectStatus 200
-          .end (err, res, body) =>
-            throw err if err
-            expect(contracts.ca.new_member).to.have.been.called
-            Member.findOne _id: @member._id, (err, member) ->
-              throw 'error' if err or not member
-              expect(member.address).to.be.equal '0x008'
-              expect(member.contractTypes).to.be.like ['ca']
-              CarPolicy.findOne car_model: 'roadster4', (err, policy) ->
-                throw 'error' if err or not policy
-                expect(body.id).to.be.equal policy._id.toString()
-                done()
-
-      it 'should return 500 if couldnt create new member', (done) ->
-        @sinon.stub contracts.ca, 'new_member', (cb) -> cb('dayum', '0x009')
-        @member.address = null
-        @member.save (err) =>
-          throw err if err
-
-          @api
-          .post '/members/' + @member._id.toString() + '/policies'
-          .json()
-          .send
-            type: 'CarPolicy'
-            contractType: 'ca'
-            car_year: 2015
-            car_make: 'tesla'
-            car_model: 'roadster5'
-          .expectStatus 500
-          .end (err, res, body) =>
-            throw err if err
-            expect(contracts.ca.new_member).to.have.been.called
-            Member.findOne _id: @member._id, (err, member) ->
-              throw 'error' if err or not member
-              expect(member.address).to.be.null
-              done()
-
-      it 'should return 500 if couldnt create member or add policy on ethereum', (done) ->
-        @sinon.stub contracts.ca, 'create_member', (addr, count, cb) -> cb('oops')
-        @member.address = '0x007'
-        @member.save (err) =>
-          throw err if err
-
-          @api
-          .post '/members/' + @member._id.toString() + '/policies'
-          .json()
-          .send
-            type: 'CarPolicy'
-            contractType: 'ca'
-            car_year: 2015
-            car_make: 'tesla'
-            car_model: 'roadster3'
-          .expectStatus 500
-          .end (err, res, body) =>
-            throw err if err
-            expect(contracts.ca.create_member).to.have.been.calledWithMatch '0x007', 1
-            done()
-
-      it 'should return 500 if couldnt save the contract type on the member', (done) ->
-        @sinon.stub contracts.ca, 'new_member', (cb) -> cb(null, '0x008')
-        @sinon.stub Member::, 'addContractType', (t, cb) -> cb('oups')
-        @member.address = null
-        @member.save (err) =>
-          throw err if err
-
-          @api
-          .post '/members/' + @member._id.toString() + '/policies'
-          .json()
-          .send
-            type: 'CarPolicy'
-            contractType: 'ca'
-            car_year: 2015
-            car_make: 'tesla'
-            car_model: 'roadster10'
-          .expectStatus 500
-          .end done
+      it 'should return 500 if there was an issue while creating the task', (done) ->
+        @sinon.stub AddMemberPolicyTask, 'delay', (data, cb) -> cb('Error, dude')
+        @api
+        .post '/members/' + @member._id.toString() + '/policies'
+        .json()
+        .send
+          type: 'CarPolicy'
+          contractType: 'ca'
+          car_year: 2015
+          car_make: 'tesla'
+          car_model: 'roadster4'
+        .expectStatus 500
+        .end done
 
     describe 'memberClaims', ->
       it 'should be dummy', (done) ->
