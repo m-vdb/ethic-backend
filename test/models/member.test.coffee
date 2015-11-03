@@ -3,6 +3,7 @@ expect = chai.expect
 
 Member = require '../../ethic/models/member.js'
 CarPolicy = require('../../ethic/models/policy.js').CarPolicy
+cars = require '../../ethic/utils/cars.js'
 
 describe 'Member', ->
   beforeEach (done) ->
@@ -13,6 +14,13 @@ describe 'Member', ->
       email: 'john@oliver.doh'
       address: '3528175afde786512'
     @member.save done
+    @sinon.stub cars, 'decodeVin', (vin, cb) ->
+      cb null,
+        year: 2000,
+        model: 'Roadster'
+        model_id: 'roadster'
+        make: 'Tesla'
+        make_id: 'tesla'
 
   afterEach (done) ->
     @member.remove done
@@ -63,9 +71,7 @@ describe 'Member', ->
         member: @member._id
         initial_premium: 10000
         initial_deductible: 100000
-        car_year: 2000,
-        car_model: 'roadster'
-        car_make: 'tesla'
+        car_vin: 'UDUEOWIJEOWE12345'
       @policy.save (err) =>
         throw err if err
         @member.getPolicies (err, policies) =>

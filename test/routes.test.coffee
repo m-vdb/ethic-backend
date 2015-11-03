@@ -3,6 +3,7 @@ chai = require 'chai'
 expect = chai.expect
 
 ObjectId = require('mongoose').Types.ObjectId
+cars = require '../ethic/utils/cars.js'
 queues = require '../ethic/queues.js'
 Member = require '../ethic/models/member.js'
 policies = require '../ethic/models/policy.js'
@@ -22,6 +23,13 @@ describe 'routes', ->
       address: "0x007"
       state: 'active'
     @member.save done
+    @sinon.stub cars, 'decodeVin', (vin, cb) ->
+      cb null,
+        year: 2000,
+        model: 'Roadster'
+        model_id: 'roadster'
+        make: 'Tesla'
+        make_id: 'tesla'
 
   afterEach (done) ->
     @member.remove done
@@ -107,10 +115,10 @@ describe 'routes', ->
           email: "joeswanson@gmail.com"
         .expectStatus 200
         .end (err, res, body) ->
-          throw err if err
+          done(err) if err
           expect(body.id).to.be.ok
           Member.findOne _id: body.id, (err, member) ->
-            throw err if err
+            done(err) if err
             expect(member._id.equals body.id).to.be.true
             expect(member.ssn).to.be.equal "35219836210"
             expect(member.firstName).to.be.equal "Joe"
@@ -194,16 +202,16 @@ describe 'routes', ->
     it 'should return 200 and set member to active otherwise', (done) ->
       @member.state = 'new'
       @member.save (err) =>
-        throw err if err
+        done(err) if err
         @api
           .post '/members/' + @member._id.toString() + '/accept'
           .json()
           .expectStatus 200
           .expectBody {}
           .end (err, res, body) =>
-            throw err if err
+            done(err) if err
             Member.findOne _id: @member._id, (err, member) ->
-              throw err if err
+              done(err) if err
               expect(member.state).to.be.equal 'active'
               done()
 
@@ -236,16 +244,16 @@ describe 'routes', ->
     it 'should return 200 and set member to denied otherwise', (done) ->
       @member.state = 'new'
       @member.save (err) =>
-        throw err if err
+        done(err) if err
         @api
           .post '/members/' + @member._id.toString() + '/deny'
           .json()
           .expectStatus 200
           .expectBody {}
           .end (err, res, body) =>
-            throw err if err
+            done(err) if err
             Member.findOne _id: @member._id, (err, member) ->
-              throw err if err
+              done(err) if err
               expect(member.state).to.be.equal 'denied'
               done()
 
@@ -277,7 +285,7 @@ describe 'routes', ->
     it 'should return 400 if account is not active', (done) ->
       @member.state = 'new'
       @member.save (err) =>
-        throw err if err
+        done(err) if err
 
         @api
           .get '/members/' + @member._id.toString() + '/policies'
@@ -311,136 +319,132 @@ describe 'routes', ->
         ]
         .end done
 
-    describe 'createMemberPolicy', ->
+  describe 'createMemberPolicy', ->
 
-      it 'should return 400 if member id is invalid', (done) ->
-        @api
-        .post '/members/dayum/policies'
-        .json()
-        .expectStatus 400
-        .end done
+    it 'should return 400 if member id is invalid', (done) ->
+      @api
+      .post '/members/dayum/policies'
+      .json()
+      .expectStatus 400
+      .end done
 
-      it 'should return 400 if policy type is invalid', (done) ->
-        @api
-        .post '/members/' + @member._id.toString() + '/policies'
-        .json()
-        .send
-          type: 'BikePolicy'
-          contractType: 'ca'
-        .expectStatus 400
-        .end done
+    it 'should return 400 if policy type is invalid', (done) ->
+      @api
+      .post '/members/' + @member._id.toString() + '/policies'
+      .json()
+      .send
+        type: 'BikePolicy'
+        contractType: 'ca'
+      .expectStatus 400
+      .end done
 
-      it 'should return 400 if contractType is invalid', (done) ->
+    it 'should return 400 if contractType is invalid', (done) ->
+      @api
+      .post '/members/' + @member._id.toString() + '/policies'
+      .json()
+      .send
+        type: 'CarPolicy'
+        contractType: 'wa'
+      .expectStatus 400
+      .end done
+
+    it 'should return 400 if cannot load Policy model', (done) ->
+      @sinon.stub Policy, 'getPolicyTypes', -> ['CarPolicy', 'BikePolicy']
+      @api
+      .post '/members/' + @member._id.toString() + '/policies'
+      .json()
+      .send
+        type: 'BikePolicy'
+        contractType: 'ca'
+      .expectStatus 400
+      .expectBody
+        code: 'BadRequestError'
+        message: 'Bad policy type.'
+      .end done
+
+    it 'should return 404 if cannot find member', (done) ->
+      @api
+      .post '/members/000000000000000000000000/policies'
+      .json()
+      .send
+        type: 'CarPolicy'
+        contractType: 'ca'
+      .expectStatus 404
+      .end done
+
+    it 'should return 400 if member is not active', (done) ->
+      @member.state = 'new'
+      @member.save (err) =>
+        done(err) if err
         @api
         .post '/members/' + @member._id.toString() + '/policies'
         .json()
         .send
           type: 'CarPolicy'
-          contractType: 'wa'
-        .expectStatus 400
-        .end done
-
-      it 'should return 400 if cannot load Policy model', (done) ->
-        @sinon.stub Policy, 'getPolicyTypes', -> ['CarPolicy', 'BikePolicy']
-        @api
-        .post '/members/' + @member._id.toString() + '/policies'
-        .json()
-        .send
-          type: 'BikePolicy'
           contractType: 'ca'
         .expectStatus 400
         .expectBody
           code: 'BadRequestError'
-          message: 'Bad policy type.'
+          message: 'Account is not active.'
         .end done
 
-      it 'should return 404 if cannot find member', (done) ->
-        @api
-        .post '/members/000000000000000000000000/policies'
-        .json()
-        .send
-          type: 'CarPolicy'
+    it 'should return 400 if policy didnt validate', (done) ->
+      @api
+      .post '/members/' + @member._id.toString() + '/policies'
+      .json()
+      .send
+        type: 'CarPolicy'
+        contractType: 'ca'  # missing VIN
+      .expectStatus 400
+      .expectBody
+          code: 'BadRequestError'
+          message: 'Missing car VIN.'
+      .end done
+
+    it 'should return 200 if it managed to create task', (done) ->
+      @api
+      .post '/members/' + @member._id.toString() + '/policies'
+      .json()
+      .send
+        type: 'CarPolicy'
+        contractType: 'ca'
+        car_vin: 'ABCDEF1234567890Y'
+      .expectStatus 200
+      .end (err, res, body) =>
+        done(err) if err
+
+        expect(queues.main.testMode.jobs.length).to.be.equal 1
+        job = queues.main.testMode.jobs[0]
+        expect(job.type).to.be.equal 'AddMemberPolicyTask'
+        expect(job.data).to.be.like
           contractType: 'ca'
-        .expectStatus 404
-        .end done
-
-      it 'should return 400 if member is not active', (done) ->
-        @member.state = 'new'
-        @member.save (err) =>
-          throw err if err
-          @api
-          .post '/members/' + @member._id.toString() + '/policies'
-          .json()
-          .send
-            type: 'CarPolicy'
-            contractType: 'ca'
-          .expectStatus 400
-          .expectBody
-            code: 'BadRequestError'
-            message: 'Account is not active.'
-          .end done
-
-      it 'should return 400 if policy didnt validate', (done) ->
-        @api
-        .post '/members/' + @member._id.toString() + '/policies'
-        .json()
-        .send
-          type: 'CarPolicy'
-          contractType: 'ca'  # missing params here
-        .expectStatus 400
-        .expectBody
-            code: 'BadRequestError'
-            message: 'CarPolicy validation failed'
-        .end done
-
-      it 'should return 200 if it managed to create task', (done) ->
-        @api
-        .post '/members/' + @member._id.toString() + '/policies'
-        .json()
-        .send
-          type: 'CarPolicy'
-          contractType: 'ca'
-          car_year: 2015
-          car_make: 'tesla'
-          car_model: 'roadster4'
-        .expectStatus 200
-        .end (err, res, body) =>
+          policyId: body.id
+        CarPolicy.findOne _id: body.id, (err, policy) ->
           done(err) if err
+          done(if policy then null else new Error('policy not saved'))
 
-          expect(queues.main.testMode.jobs.length).to.be.equal 1
-          job = queues.main.testMode.jobs[0]
-          expect(job.type).to.be.equal 'AddMemberPolicyTask'
-          expect(job.data).to.be.like
-            contractType: 'ca'
-            policyId: body.id
-          CarPolicy.findOne _id: body.id, (err, policy) ->
-            done(err) if err
-            done(if policy then null else new Error('policy not saved'))
+    it 'should return 500 if there was an issue while creating the task', (done) ->
+      @sinon.stub AddMemberPolicyTask, 'delay', (data, cb) -> cb('Error, dude')
+      @api
+      .post '/members/' + @member._id.toString() + '/policies'
+      .json()
+      .send
+        type: 'CarPolicy'
+        contractType: 'ca'
+        car_vin: 'ABCDEF1234567890Y'
+      .expectStatus 500
+      .end done
 
-      it 'should return 500 if there was an issue while creating the task', (done) ->
-        @sinon.stub AddMemberPolicyTask, 'delay', (data, cb) -> cb('Error, dude')
-        @api
-        .post '/members/' + @member._id.toString() + '/policies'
-        .json()
-        .send
-          type: 'CarPolicy'
-          contractType: 'ca'
-          car_year: 2015
-          car_make: 'tesla'
-          car_model: 'roadster4'
-        .expectStatus 500
+  describe 'memberClaims', ->
+    it 'should be dummy', (done) ->
+      @api
+        .get '/members/toto/claims'
+        .expectStatus 200
         .end done
 
-    describe 'memberClaims', ->
-      it 'should be dummy', (done) ->
-        @api
-          .get '/members/toto/claims'
-          .expectStatus 200
-          .end done
-
-    describe 'createMemberClaims', ->
-      it 'should be dummy', (done) ->
-        @api
-          .post '/members/toto/claims'
-          .expectStatus 200
-          .end done
+  describe 'createMemberClaims', ->
+    it 'should be dummy', (done) ->
+      @api
+        .post '/members/toto/claims'
+        .expectStatus 200
+        .end done
