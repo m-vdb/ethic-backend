@@ -16,7 +16,6 @@ module.exports = {
         model: resp.model.name,
         model_id: resp.model.niceName,
         year: resp.years[0].year,
-        price: resp.price.baseInvoice,
         size: resp.categories.vehicleSize,
         style: resp.categories.vehicleStyle
       });

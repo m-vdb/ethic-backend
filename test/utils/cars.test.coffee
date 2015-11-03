@@ -23,8 +23,6 @@ describe 'cars', ->
             name: 'Town and Country'
             niceName: 'town-and-country'
           years: [{year: 2006}]
-          price:
-            baseInvoice: 25803
           categories:
             vehicleSize: 'Large'
             vehicleStyle: 'Passenger Minivan'
@@ -37,7 +35,6 @@ describe 'cars', ->
           model: 'Town and Country'
           model_id: 'town-and-country'
           year: 2006
-          price: 25803
           size: 'Large'
           style: 'Passenger Minivan'
         done()
