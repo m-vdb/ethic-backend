@@ -1,7 +1,7 @@
 chai = require 'chai'
 expect = chai.expect
 
-_ = require 'underscore'
+EdmundsClient = require 'node-edmunds-api'
 carUtils = require '../../ethic/utils/cars.js'
 
 describe 'cars', ->
@@ -13,8 +13,22 @@ describe 'cars', ->
         expect(resp).to.be.undefined
         done()
 
-    it 'should return the response from EdmundsClient for valid VIN', ->
-      # this test uses an API
+    it 'should return the response from EdmundsClient for valid VIN', (done) ->
+      @sinon.stub EdmundsClient::, 'decodeVin', (data, cb) ->
+        cb null,
+          make:
+            name: 'Chrysler'
+            niceName: 'chrysler'
+          model:
+            name: 'Town and Country'
+            niceName: 'town-and-country'
+          years: [{year: 2006}]
+          price:
+            baseInvoice: 25803
+          categories:
+            vehicleSize: 'Large'
+            vehicleStyle: 'Passenger Minivan'
+
       carUtils.decodeVin vin: '2A4GP54L06R610288', (err, resp) ->
         expect(err).to.be.null
         expect(resp).be.like
