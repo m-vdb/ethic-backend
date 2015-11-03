@@ -5,8 +5,8 @@ var restify = require('restify'),
 var settings = require('./settings.js'),
     ethUtils = require('./utils/eth.js'),
     Member = require('./models/member.js'),
-    contracts = require('./models/contract.js').contracts,
-    Policy = require('./models/policy.js').Policy;
+    Policy = require('./models/policy.js').Policy,
+    AddMemberPolicyTask = require('./tasks').AddMemberPolicyTask;
 
 
 module.exports = {
@@ -147,40 +147,16 @@ module.exports = {
       policy.save(function (err) {
         if (err) return next(new restify.errors.BadRequestError(err.message));
 
-        function finalCallback (err) {
+        AddMemberPolicyTask.delay({
+          contractType: policy.contractType,
+          policyId: policy._id.toString()
+        }, function (err) {
           if (err) return next(err);
 
-          member.addContractType(policy.contractType, function (err) {
-            if (err) return next(err);
-
-            res.json({id: policy._id});
-            return next();
-          });
-        }
-
-        var contract = contracts[policy.contractType];
-        // if member has no address, then create it in ehtereum
-        // (policy count is set to 1 by default)
-        if (!member.hasContract(policy.contractType)) {
-          // member already has an ethereum account
-          if (member.address) {
-            contract.create_member(member.address, 1, finalCallback);
-          }
-          // first policy for a member
-          else {
-            contract.new_member(function (err, address) {
-              if (err) return next(err);
-
-              member.address = address;
-              finalCallback();
-            });
-          }
-        }
-        // otherwise just add it
-        else {
-          contract.add_policy(member.address, finalCallback);
-        }
-      })
+          res.json({id: policy._id});
+          next();
+        });
+      });
     });
   },
   /**
