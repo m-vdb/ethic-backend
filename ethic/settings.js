@@ -4,6 +4,7 @@ var _ = require('underscore');
 module.exports = {
   version: '0.0.1',
   authSecret: 'i-am-a-secret-yeah',
+  cookieName: 'ethic',  // TODO: this should depend on the env
   mongoUri: 'mongodb://localhost/ethic',
   mongoOptions: {},
   contractTypes: _.keys(require('./contracts')),
