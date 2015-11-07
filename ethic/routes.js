@@ -27,13 +27,15 @@ module.exports = {
     req.assert('firstName', 'Invalid firstName').notEmpty().isAlpha();
     req.assert('lastName', 'Invalid lastName').notEmpty().isAlpha();
     req.assert('email', 'Invalid email').notEmpty().isEmail();
+    req.assert('password', 'Invalid password').notEmpty();
     if (req.sendValidationErrorIfAny()) return next();
 
     var member = new Member({
       ssn: req.params.ssn,
       firstName: req.params.firstName,
       lastName: req.params.lastName,
-      email: req.params.email
+      email: req.params.email,
+      password: req.params.password
     });
     member.save(function (err) {
       if (err) return next(err);

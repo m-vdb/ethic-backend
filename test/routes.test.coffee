@@ -54,6 +54,7 @@ describe 'routes', ->
           firstName: "Joe"
           lastName: "Swanson"
           email: "joeswanson@gmail.com"
+          password: 'yop'
         .expectStatus 400
         .expectBody
           code: "BadRequestError"
@@ -69,6 +70,7 @@ describe 'routes', ->
           firstName: "Joe_-*&*(%&$@!&"
           lastName: "Swanson"
           email: "joeswanson@gmail.com"
+          password: 'yop'
         .expectStatus 400
         .expectBody
           code: "BadRequestError"
@@ -83,6 +85,7 @@ describe 'routes', ->
           firstName: "Joe"
           lastName: "Swanson_^)*!^@_!&@_"
           email: "joeswanson@gmail.com"
+          password: 'yop'
         .expectStatus 400
         .expectBody
           code: "BadRequestError"
@@ -98,6 +101,7 @@ describe 'routes', ->
           firstName: "Joe"
           lastName: "Swanson"
           email: "joeswanson___gmail.com"
+          password: 'yop'
         .expectStatus 400
         .expectBody
           code: "BadRequestError"
@@ -113,6 +117,7 @@ describe 'routes', ->
           firstName: "Joe"
           lastName: "Swanson"
           email: "joeswanson@gmail.com"
+          password: 'yop'
         .expectStatus 200
         .end (err, res, body) ->
           done(err) if err
@@ -125,6 +130,7 @@ describe 'routes', ->
             expect(member.lastName).to.be.equal "Swanson"
             expect(member.email).to.be.equal "joeswanson@gmail.com"
             expect(member.state).to.be.equal "new"
+            expect(member.password).to.be.equal "yop"
             done()
 
     it 'should return error if couldnt save member', (done) ->
@@ -137,6 +143,7 @@ describe 'routes', ->
           firstName: "Joe"
           lastName: "Swanson"
           email: "joeswanson@gmail.com"
+          password: 'yop'
         .expectStatus 500
         .expectBody
           code: 'InternalError'
