@@ -2,12 +2,13 @@ var restify = require('restify'),
     validator = require('restify-validator'),
     passport = require('passport'),
     mongoose = require('mongoose'),
-    web3 = require('web3');
+    web3 = require('web3'),
+    CookieParser = require('restify-cookies');
 
 var web3Admin = require('./utils/web3-admin.js'),
     settings = require('./settings.js'),
     routes = require('./routes.js'),
-    auth = require('./auth.js'),
+    auth = require('./auth'),
     restifyUtils = require('./utils/restify'),
     restifyMongooseUtils = require('./utils/restify-mongoose');
 
@@ -20,7 +21,7 @@ var server = restify.createServer({
 
 // auth
 server.use(passport.initialize());
-server.use(auth());
+server.use(CookieParser.parse);
 
 // common handlers
 server.use(restify.acceptParser(server.acceptable));
