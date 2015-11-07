@@ -1,6 +1,6 @@
 test:
   post:
-    - ./node_modules/istanbul/lib/cli.js check-coverage
+    - npm run check-coverage
 
 general:
   artifacts:

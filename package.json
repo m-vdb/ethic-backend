@@ -29,6 +29,7 @@
   },
   "scripts": {
     "start": "node server.js",
-    "test": "./node_modules/istanbul-harmony/lib/cli.js cover ./node_modules/gulp/bin/gulp.js test"
+    "test": "./node_modules/istanbul-harmony/lib/cli.js cover ./node_modules/gulp/bin/gulp.js test",
+    "check-coverage": "./node_modules/istanbul-harmony/lib/cli.js check-coverage"
   }
 }
