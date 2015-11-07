@@ -23,5 +23,11 @@ module.exports = {
 
   getJWT: function (uid) {
     return jwt.sign({uid: uid}, settings.authSecret, {issuer: 'ethic'});
+  },
+
+  verifyJWT: function (req, payload, done) {
+    if (!req.params.id) return done(null, true);  // no id in request params, but cookie here
+    if (req.params.id === payload.uid) return done(null, true, {_id: payload.uid});
+    done(null, false, {message: 'Incorrect token uid.'});
   }
 };

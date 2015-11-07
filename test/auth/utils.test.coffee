@@ -57,10 +57,32 @@ describe 'authUtils', ->
           expect(authErr).to.be.undefined
           done()
 
-    describe 'getJWT', ->
-      it 'should return a JWT from uid', ->
-        token = authUtils.getJWT '561f35e126ee00815a83884f'
-        expect(token).to.be.a.string
-        decoded = jwt.verify token, settings.authSecret, issuer: 'ethic'
-        expect(decoded.uid).to.be.equal '561f35e126ee00815a83884f'
-        expect(decoded.iat).to.be.a 'number'
+  describe 'getJWT', ->
+    it 'should return a JWT from uid', ->
+      token = authUtils.getJWT '561f35e126ee00815a83884f'
+      expect(token).to.be.a.string
+      decoded = jwt.verify token, settings.authSecret, issuer: 'ethic'
+      expect(decoded.uid).to.be.equal '561f35e126ee00815a83884f'
+      expect(decoded.iat).to.be.a 'number'
+
+  describe 'verifyJWT', ->
+    it 'should return success if no id param on the request', (done) ->
+      authUtils.verifyJWT params: {}, {}, (err, auth, info) ->
+        expect(err).to.be.null
+        expect(auth).to.be.true
+        expect(info).to.be.undefined
+        done()
+
+    it 'should return success if id corresponds to the one in token', (done) ->
+      authUtils.verifyJWT {params: {id: '561f35e126ee00815a83884f'}}, uid: '561f35e126ee00815a83884f', (err, auth, info) ->
+        expect(err).to.be.null
+        expect(auth).to.be.true
+        expect(info).to.be.like _id: '561f35e126ee00815a83884f'
+        done()
+
+    it 'should return error if id in token is different from the resource', (done) ->
+      authUtils.verifyJWT {params: {id: '561f35e126ee00815a83doihu'}}, uid: '561f35e126ee00815a83884f', (err, auth, info) ->
+        expect(err).to.be.null
+        expect(auth).to.be.false
+        expect(info).to.be.like message: 'Incorrect token uid.'
+        done()
