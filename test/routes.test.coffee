@@ -1,8 +1,8 @@
-sinon = require 'sinon'
 chai = require 'chai'
 expect = chai.expect
 
 ObjectId = require('mongoose').Types.ObjectId
+settings = require '../ethic/settings.js'
 cars = require '../ethic/utils/cars.js'
 queues = require '../ethic/queues.js'
 Member = require '../ethic/models/member.js'
@@ -33,6 +33,17 @@ describe 'routes', ->
 
   afterEach (done) ->
     @member.remove done
+
+  describe 'home', ->
+    it 'should yield 200 and return the version', (done) ->
+      @api
+        .get '/'
+        .json()
+        .expectStatus 200
+        .expectBody
+          name: 'ethic'
+          version: settings.version
+        .end done
 
   describe 'createMember', ->
     it 'should yield 400 if nothing passed', (done) ->

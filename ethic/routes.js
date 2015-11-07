@@ -12,8 +12,8 @@ var settings = require('./settings.js'),
 module.exports = {
   home: function (req, res, next) {
     res.json({
-      "name": "ethic",
-      "version": settings.version
+      name: "ethic",
+      version: settings.version
     });
     return next();
   },
