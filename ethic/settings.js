@@ -5,6 +5,9 @@ module.exports = {
   version: '0.0.1',
   authSecret: 'i-am-a-secret-yeah',
   cookieName: 'ethic',  // TODO: this should depend on the env
+  cookieOptions: {
+    secure: true
+  },
   mongoUri: 'mongodb://localhost/ethic',
   mongoOptions: {},
   contractTypes: _.keys(require('./contracts')),
