@@ -2,9 +2,9 @@ chai = require 'chai'
 expect = chai.expect
 jwt = require 'jsonwebtoken'
 
-settings = require '../../ethic/settings.js'
 Member = require '../../ethic/models/member.js'
 JWTStrategy = require '../../ethic/auth/jwt.js'
+
 
 describe 'JWTStrategy', ->
 

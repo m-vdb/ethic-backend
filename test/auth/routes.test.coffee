@@ -1,9 +1,9 @@
 chai = require 'chai'
 expect = chai.expect
 jwt = require 'jsonwebtoken'
+config = require 'config'
 
 _ = require 'underscore'
-settings = require '../../ethic/settings.js'
 Member = require '../../ethic/models/member.js'
 authUtils = require '../../ethic/auth/utils.js'
 server = require '../../ethic'
@@ -81,8 +81,8 @@ describe 'authRoutes', ->
           [cookie, secure] = res.headers['set-cookie'][0].split('; ')
           [cookieName, token] = cookie.split('=')
           expect(secure).to.be.equal 'Secure'
-          expect(cookieName).to.be.equal settings.cookieName
-          decoded = jwt.verify token, settings.authSecret, issuer: 'ethic'
+          expect(cookieName).to.be.equal config.get('cookieName')
+          decoded = jwt.verify token, config.get('authSecret'), issuer: 'ethic'
           expect(decoded.uid).to.be.equal @member._id.toString()
           done()
 

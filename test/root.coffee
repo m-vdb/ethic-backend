@@ -3,15 +3,15 @@ _ = require 'underscore'
 mongoose = require 'mongoose'
 hippie = require 'hippie'
 kue = require 'kue'
+config = require 'config'
 
 JWTStrategy = require '../ethic/auth/jwt.js'
 queues = require '../ethic/queues.js'
-settings = require '../ethic/settings.js'
 server = require '../ethic/index.js'
 
 before ->
   if mongoose.connection.readyState == 0
-    mongoose.connect settings.mongoUri, settings.mongoOptions
+    mongoose.connect config.get('mongoUri'), config.get('mongoOptions')
   @noauth = =>
     @sinon.stub JWTStrategy::, 'authenticate', ->
       this.success {user: 'toto'}

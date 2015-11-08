@@ -1,8 +1,8 @@
 var EdmundsClient = require('node-edmunds-api'),
-    settings = require('../settings.js');
+    config = require('config');
 
 var edmundsClient = new EdmundsClient({
-  apiKey: settings.edmunds.apiKey
+  apiKey: config.get('edmunds.apiKey')
 });
 
 module.exports = {

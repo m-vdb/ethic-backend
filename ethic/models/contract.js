@@ -46,5 +46,6 @@ module.exports = {
 };
 
 _.each(contractData, function (data, name) {
+  if (name == 'contractTypes') return;
   module.exports.contracts[name] = new Contract(data);
 });

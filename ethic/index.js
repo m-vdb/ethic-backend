@@ -3,10 +3,10 @@ var restify = require('restify'),
     passport = require('passport'),
     mongoose = require('mongoose'),
     web3 = require('web3'),
-    CookieParser = require('restify-cookies');
+    CookieParser = require('restify-cookies'),
+    config = require('config');
 
 var web3Admin = require('./utils/web3-admin.js'),
-    settings = require('./settings.js'),
     routes = require('./routes.js'),
     auth = require('./auth'),
     restifyUtils = require('./utils/restify'),
@@ -16,7 +16,7 @@ web3.setProvider(new web3.providers.HttpProvider('http://localhost:8545'));
 web3Admin();  // required to use admin calls
 var server = restify.createServer({
   name: 'ethic-backend',
-  version: settings.version
+  version: config.get('version')
 });
 
 // auth
@@ -54,6 +54,6 @@ server.post('/members/:id/claims', jwtStrategy, routes.createMemberClaims);
 
 
 // mongodb
-mongoose.connect(settings.mongoUri, settings.mongoOptions);
+mongoose.connect(config.get('mongoUri'), config.get('mongoOptions'));
 
 module.exports = server;

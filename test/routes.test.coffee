@@ -1,8 +1,8 @@
 chai = require 'chai'
 expect = chai.expect
-
 ObjectId = require('mongoose').Types.ObjectId
-settings = require '../ethic/settings.js'
+config = require 'config'
+
 cars = require '../ethic/utils/cars.js'
 queues = require '../ethic/queues.js'
 Member = require '../ethic/models/member.js'
@@ -42,7 +42,7 @@ describe 'routes', ->
         .expectStatus 200
         .expectBody
           name: 'ethic'
-          version: settings.version
+          version: config.get 'version'
         .end done
 
   describe 'createMember', ->

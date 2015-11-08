@@ -1,0 +1,10 @@
+{
+  "authSecret": "dummy-secret",
+  "mongoUri": "mongodb://localhost/ethic-test",
+  "edmunds": {
+    "apiKey": "dummy"
+  },
+  "cookieOptions": {
+    "secure": true
+  }
+}

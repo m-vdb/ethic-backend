@@ -1,14 +1,14 @@
 var mongoose = require('mongoose');
 require('mongoose-schema-extend');
 
-var settings = require('../settings.js'),
+var contracts = require('../contracts'),
     cars = require('../utils/cars.js');
 
 var policySchema = new mongoose.Schema({
   member: {type: mongoose.Schema.Types.ObjectId, ref: 'Member'},
   initial_premium: Number,
   initial_deductible: Number,
-  contractType: {type: String, enum: settings.contractTypes}
+  contractType: {type: String, enum: contracts.contractTypes}
 }, {
   collection: 'policies',
   discriminatorKey: '_type',
@@ -62,7 +62,7 @@ carPolicySchema.pre('save', function (cb) {
     policy.car_year = resp.year;
 
     // TODO: compute contract type
-    policy.contractType = settings.contractTypes[0];
+    policy.contractType = contracts.contractTypes[0];
     cb();
   });
 });

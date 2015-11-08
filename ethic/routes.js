@@ -1,9 +1,9 @@
 var restify = require('restify'),
     web3 = require('web3'),
-    _ = require('underscore');
+    _ = require('underscore'),
+    config = require('config');
 
-var settings = require('./settings.js'),
-    ethUtils = require('./utils/eth.js'),
+var ethUtils = require('./utils/eth.js'),
     Member = require('./models/member.js'),
     Policy = require('./models/policy.js').Policy,
     AddMemberPolicyTask = require('./tasks').AddMemberPolicyTask;
@@ -13,7 +13,7 @@ module.exports = {
   home: function (req, res, next) {
     res.json({
       name: "ethic",
-      version: settings.version
+      version: config.get('version')
     });
     return next();
   },
