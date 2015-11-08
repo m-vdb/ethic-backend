@@ -17,6 +17,7 @@ Then you can do the following:
 ```bash
 $ npm install .
 ```
+You can now edit the environment variables in the `.env` file.
 
 ## Developing
 
