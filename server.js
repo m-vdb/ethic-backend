@@ -1,3 +1,4 @@
+require('dotenv').load();
 var server = require('./ethic');
 
 server.listen(1234, function () {

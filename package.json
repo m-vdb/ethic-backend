@@ -3,6 +3,7 @@
   "private": true,
   "dependencies": {
     "config": "^1.16.0",
+    "dotenv": "^1.2.0",
     "gulp-rename": "^1.2.2",
     "jsonwebtoken": "^5.4.1",
     "kue": "0.9.6",
