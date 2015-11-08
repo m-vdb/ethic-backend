@@ -2,8 +2,8 @@ chai = require 'chai'
 expect = chai.expect
 mongoose = require 'mongoose'
 jwt = require 'jsonwebtoken'
+config = require 'config'
 
-settings = require '../../ethic/settings.js'
 Member = require '../../ethic/models/member.js'
 authUtils = require '../../ethic/auth/utils.js'
 
@@ -61,7 +61,7 @@ describe 'authUtils', ->
     it 'should return a JWT from uid', ->
       token = authUtils.getJWT '561f35e126ee00815a83884f'
       expect(token).to.be.a.string
-      decoded = jwt.verify token, settings.authSecret, issuer: 'ethic'
+      decoded = jwt.verify token, config.get('authSecret'), issuer: 'ethic'
       expect(decoded.uid).to.be.equal '561f35e126ee00815a83884f'
       expect(decoded.iat).to.be.a 'number'
 

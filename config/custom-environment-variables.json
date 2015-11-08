@@ -1,0 +1,6 @@
+{
+  "authSecret": "AUTH_SECRET_KEY",
+  "edmunds": {
+    "apiKey": "EDMUNDS_API_KEY"
+  }
+}

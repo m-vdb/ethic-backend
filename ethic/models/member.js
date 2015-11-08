@@ -1,7 +1,7 @@
 var mongoose = require('mongoose'),
     _ = require('underscore');
 
-var settings = require('../settings.js');
+var contracts = require('../contracts');
 var states = ['new', 'active', 'inactive', 'denied'];
 
 var memberSchema = new mongoose.Schema({
@@ -12,7 +12,7 @@ var memberSchema = new mongoose.Schema({
   password: {type: String},  // TODO: store hashed version + validation rules
   state: {type: String, default: 'new', enum: states},
   address: String,
-  contractTypes: [{type: String, enum: settings.contractTypes}]
+  contractTypes: [{type: String, enum: contracts.contractTypes}]
 }, {
   collection: 'members',
   toJSON: {

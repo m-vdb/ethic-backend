@@ -1,7 +1,8 @@
-var kue = require('kue');
+var kue = require('kue'),
+    config = require('config');
 
 module.exports = {
   main: kue.createQueue({
-    redis: require('./settings').redisOptions
+    redis: config.get('redisOptions')
   })
 };

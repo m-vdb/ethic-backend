@@ -1,7 +1,7 @@
-var jwt = require('jsonwebtoken');
+var jwt = require('jsonwebtoken'),
+    config = require('config');
 
-var Member = require('../models/member.js'),
-    settings = require('../settings.js');
+var Member = require('../models/member.js');
 
 module.exports = {
   /**
@@ -22,7 +22,7 @@ module.exports = {
   },
 
   getJWT: function (uid) {
-    return jwt.sign({uid: uid}, settings.authSecret, {issuer: 'ethic'});
+    return jwt.sign({uid: uid}, config.get('authSecret'), {issuer: 'ethic'});
   },
 
   verifyJWT: function (req, payload, done) {

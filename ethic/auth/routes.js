@@ -1,7 +1,7 @@
-var restify = require('restify');
+var restify = require('restify'),
+    config = require('config');
 
-var utils = require('./utils.js'),
-    settings = require('../settings.js');
+var utils = require('./utils.js');
 
 
 module.exports = {
@@ -15,7 +15,7 @@ module.exports = {
       if (authErr || !user) return next(new restify.errors.UnauthorizedError());
 
       var token = utils.getJWT(user._id);
-      res.setCookie(settings.cookieName, token, settings.cookieOptions);  // TODO: httpOnly ?
+      res.setCookie(config.get('cookieName'), token, config.get('cookieOptions'));  // TODO: httpOnly ?
 
       res.json({});
       return next();

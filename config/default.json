@@ -1,0 +1,15 @@
+{
+  "version": "0.0.1",
+  "authSecret": "",
+  "cookieName": "ethic-bcknd-dev",
+  "cookieOptions": {},
+  "mongoUri": "mongodb://localhost/ethic",
+  "mongoOptions": {},
+  "redisOptions": {
+    "port": 6379,
+    "host": "127.0.0.1"
+  },
+  "edmunds": {
+    "apiKey": ""
+  }
+}
