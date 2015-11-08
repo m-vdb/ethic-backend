@@ -20,8 +20,9 @@ var server = restify.createServer({
 });
 
 // auth
-server.use(passport.initialize());
+var jwtStrategy = auth.jwt();
 server.use(CookieParser.parse);
+server.use(passport.initialize());
 
 // common handlers
 server.use(restify.acceptParser(server.acceptable));
@@ -40,16 +41,16 @@ server.pre(function (request, response, next) {
 });
 
 // routes
-server.get('/', routes.home);
+server.get('/', jwtStrategy, routes.home);
 server.post('/authenticate', auth.routes.authenticate);
-server.post('/members', routes.createMember);
-server.get('/members/:id', routes.member);
-server.post('/members/:id/accept', routes.acceptMember);
-server.post('/members/:id/deny', routes.denyMember);
-server.get('/members/:id/policies', routes.memberPolicies);
-server.post('/members/:id/policies', routes.createMemberPolicy);
-server.get('/members/:id/claims', routes.memberClaims);
-server.post('/members/:id/claims', routes.createMemberClaims);
+server.post('/members', jwtStrategy, routes.createMember);
+server.get('/members/:id', jwtStrategy, routes.member);
+server.post('/members/:id/accept', jwtStrategy, routes.acceptMember);
+server.post('/members/:id/deny', jwtStrategy, routes.denyMember);
+server.get('/members/:id/policies', jwtStrategy, routes.memberPolicies);
+server.post('/members/:id/policies', jwtStrategy, routes.createMemberPolicy);
+server.get('/members/:id/claims', jwtStrategy, routes.memberClaims);
+server.post('/members/:id/claims', jwtStrategy, routes.createMemberClaims);
 
 
 // mongodb
