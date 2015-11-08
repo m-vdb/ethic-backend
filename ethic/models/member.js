@@ -9,6 +9,7 @@ var memberSchema = new mongoose.Schema({
   lastName: String,
   ssn: {type: String, index: {unique: true}},  // TODO: number
   email: {type: String, index: {unique: true}},
+  password: {type: String},  // TODO: store hashed version + validation rules
   state: {type: String, default: 'new', enum: states},
   address: String,
   contractTypes: [{type: String, enum: settings.contractTypes}]

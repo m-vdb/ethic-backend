@@ -2,9 +2,9 @@ sinon = require 'sinon'
 _ = require 'underscore'
 mongoose = require 'mongoose'
 hippie = require 'hippie'
-BasicStrategy = require('passport-http').BasicStrategy
 kue = require 'kue'
 
+JWTStrategy = require '../ethic/auth/jwt.js'
 queues = require '../ethic/queues.js'
 settings = require '../ethic/settings.js'
 server = require '../ethic/index.js'
@@ -13,7 +13,7 @@ before ->
   if mongoose.connection.readyState == 0
     mongoose.connect settings.mongoUri, settings.mongoOptions
   @noauth = =>
-    @sinon.stub BasicStrategy::, 'authenticate', ->
+    @sinon.stub JWTStrategy::, 'authenticate', ->
       this.success {user: 'toto'}
   queues.dumb = kue.createQueue()
   _.each queues, (queue) ->

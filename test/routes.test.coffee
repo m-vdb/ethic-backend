@@ -1,8 +1,8 @@
-sinon = require 'sinon'
 chai = require 'chai'
 expect = chai.expect
 
 ObjectId = require('mongoose').Types.ObjectId
+settings = require '../ethic/settings.js'
 cars = require '../ethic/utils/cars.js'
 queues = require '../ethic/queues.js'
 Member = require '../ethic/models/member.js'
@@ -34,6 +34,17 @@ describe 'routes', ->
   afterEach (done) ->
     @member.remove done
 
+  describe 'home', ->
+    it 'should yield 200 and return the version', (done) ->
+      @api
+        .get '/'
+        .json()
+        .expectStatus 200
+        .expectBody
+          name: 'ethic'
+          version: settings.version
+        .end done
+
   describe 'createMember', ->
     it 'should yield 400 if nothing passed', (done) ->
       @api
@@ -54,6 +65,7 @@ describe 'routes', ->
           firstName: "Joe"
           lastName: "Swanson"
           email: "joeswanson@gmail.com"
+          password: 'yop'
         .expectStatus 400
         .expectBody
           code: "BadRequestError"
@@ -69,6 +81,7 @@ describe 'routes', ->
           firstName: "Joe_-*&*(%&$@!&"
           lastName: "Swanson"
           email: "joeswanson@gmail.com"
+          password: 'yop'
         .expectStatus 400
         .expectBody
           code: "BadRequestError"
@@ -83,6 +96,7 @@ describe 'routes', ->
           firstName: "Joe"
           lastName: "Swanson_^)*!^@_!&@_"
           email: "joeswanson@gmail.com"
+          password: 'yop'
         .expectStatus 400
         .expectBody
           code: "BadRequestError"
@@ -98,6 +112,7 @@ describe 'routes', ->
           firstName: "Joe"
           lastName: "Swanson"
           email: "joeswanson___gmail.com"
+          password: 'yop'
         .expectStatus 400
         .expectBody
           code: "BadRequestError"
@@ -113,6 +128,7 @@ describe 'routes', ->
           firstName: "Joe"
           lastName: "Swanson"
           email: "joeswanson@gmail.com"
+          password: 'yop'
         .expectStatus 200
         .end (err, res, body) ->
           done(err) if err
@@ -125,6 +141,7 @@ describe 'routes', ->
             expect(member.lastName).to.be.equal "Swanson"
             expect(member.email).to.be.equal "joeswanson@gmail.com"
             expect(member.state).to.be.equal "new"
+            expect(member.password).to.be.equal "yop"
             done()
 
     it 'should return error if couldnt save member', (done) ->
@@ -137,6 +154,7 @@ describe 'routes', ->
           firstName: "Joe"
           lastName: "Swanson"
           email: "joeswanson@gmail.com"
+          password: 'yop'
         .expectStatus 500
         .expectBody
           code: 'InternalError'
