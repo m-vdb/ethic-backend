@@ -3,6 +3,7 @@
   "private": true,
   "dependencies": {
     "config": "^1.16.0",
+    "gulp-rename": "^1.2.2",
     "jsonwebtoken": "^5.4.1",
     "kue": "0.9.6",
     "mongoose": "4.1.6",
@@ -10,6 +11,7 @@
     "node-edmunds-api": "0.0.0",
     "passport": "0.3.0",
     "passport-http": "0.3.0",
+    "path-exists": "^2.0.0",
     "restify": "4.0.2",
     "restify-cookies": "^0.2.0",
     "restify-validator": "0.3.1",
@@ -31,6 +33,7 @@
     "node": "~4.2.1"
   },
   "scripts": {
+    "postinstall": "./node_modules/gulp/bin/gulp.js postinstall",
     "start": "node server.js",
     "test": "./node_modules/istanbul-harmony/lib/cli.js cover ./node_modules/gulp/bin/gulp.js test",
     "check-coverage": "./node_modules/istanbul-harmony/lib/cli.js check-coverage"
