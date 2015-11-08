@@ -2,9 +2,11 @@ chai = require 'chai'
 expect = chai.expect
 jwt = require 'jsonwebtoken'
 
+_ = require 'underscore'
 settings = require '../../ethic/settings.js'
 Member = require '../../ethic/models/member.js'
 authUtils = require '../../ethic/auth/utils.js'
+server = require '../../ethic'
 
 
 describe 'authRoutes', ->
@@ -83,3 +85,20 @@ describe 'authRoutes', ->
           decoded = jwt.verify token, settings.authSecret, issuer: 'ethic'
           expect(decoded.uid).to.be.equal @member._id.toString()
           done()
+
+
+describe 'allRoutes', ->
+
+  describe 'authentication', ->
+    id = '123456789012345678901234'
+    _.each server.router.mounts, (routeConf) =>
+      path = routeConf.spec.path
+      return if path == '/authenticate'
+
+      path = path.replace ':id', id
+      method = routeConf.method.toLowerCase()
+
+      it "should return 401 when calling #{ path } without token", (done) ->
+        @api[method] path
+          .expectStatus 401
+          .end done
