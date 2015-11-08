@@ -1,4 +1,5 @@
 {
+  "cookieName": "ethic-bcknd",
   "cookieOptions": {
     "secure": true
   }

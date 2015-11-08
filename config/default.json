@@ -1,7 +1,7 @@
 {
   "version": "0.0.1",
   "authSecret": "",
-  "cookieName": "ethic",  // TODO: this should depend on the env
+  "cookieName": "ethic-bcknd-dev",
   "cookieOptions": {},
   "mongoUri": "mongodb://localhost/ethic",
   "mongoOptions": {},
