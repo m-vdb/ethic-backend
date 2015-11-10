@@ -28,6 +28,7 @@ server.use(passport.initialize());
 server.use(restify.acceptParser(server.acceptable));
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
+server.use(restify.CORS(config.get('corsOptions')));
 
 // utils
 server.use(validator);
