@@ -1,6 +1,11 @@
 {
   "cookieName": "ethic-bcknd",
   "cookieOptions": {
-    "secure": true
-  }
+    "secure": true,
+    "domain": "getethic.com"
+  },
+  "corsOptions": {
+    "origins": ["https://getethic.com", "https://app.getethic.com"],
+    "credentials": true
+  },
 }
