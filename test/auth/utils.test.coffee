@@ -67,17 +67,17 @@ describe 'authUtils', ->
 
   describe 'verifyJWT', ->
     it 'should return success if no id param on the request', (done) ->
-      authUtils.verifyJWT params: {}, {}, (err, auth, info) ->
+      authUtils.verifyJWT {params: {}}, uid: '561f35e126ee00815a83884f', (err, auth, info) ->
         expect(err).to.be.null
         expect(auth).to.be.true
-        expect(info).to.be.undefined
+        expect(info).to.be.like id: '561f35e126ee00815a83884f'
         done()
 
     it 'should return success if id corresponds to the one in token', (done) ->
       authUtils.verifyJWT {params: {id: '561f35e126ee00815a83884f'}}, uid: '561f35e126ee00815a83884f', (err, auth, info) ->
         expect(err).to.be.null
         expect(auth).to.be.true
-        expect(info).to.be.like _id: '561f35e126ee00815a83884f'
+        expect(info).to.be.like id: '561f35e126ee00815a83884f'
         done()
 
     it 'should return error if id in token is different from the resource', (done) ->

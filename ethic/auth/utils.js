@@ -26,8 +26,12 @@ module.exports = {
   },
 
   verifyJWT: function (req, payload, done) {
-    if (!req.params.id) return done(null, true);  // no id in request params, but cookie here
-    if (req.params.id === payload.uid) return done(null, true, {_id: payload.uid});
+    // no id in request params, but cookie here
+    // or id in params should be the same
+    if (!req.params.id || req.params.id === payload.uid) {
+      req.params.id = payload.uid;
+      return done(null, true, {id: payload.uid});
+    }
     done(null, false, {message: 'Incorrect token uid.'});
   }
 };
