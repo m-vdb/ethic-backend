@@ -85,7 +85,7 @@ describe 'authRoutes', ->
           expect(cookieName).to.be.equal config.get('cookieName')
           decoded = jwt.verify token, config.get('authSecret'), issuer: 'ethic'
           expect(decoded.uid).to.be.equal @member._id.toString()
-          expect(body).to.be.like id: @member._id.toString()
+          expect(body).to.be.like @member.toJSON()
           done()
 
 

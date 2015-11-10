@@ -17,9 +17,7 @@ module.exports = {
       var token = utils.getJWT(user._id);
       res.setCookie(config.get('cookieName'), token, config.get('cookieOptions'));  // TODO: httpOnly ?
 
-      res.json({
-        id: user._id.toString()
-      });
+      res.json(user.toJSON());
       return next();
     });
   }
