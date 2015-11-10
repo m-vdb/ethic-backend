@@ -44,6 +44,7 @@ server.pre(function (request, response, next) {
 // routes
 server.get('/', jwtStrategy, routes.home);
 server.post('/authenticate', auth.routes.authenticate);
+server.get('/member', jwtStrategy, routes.member);
 server.post('/members', jwtStrategy, routes.createMember);
 server.get('/members/:id', jwtStrategy, routes.member);
 server.post('/members/:id/accept', jwtStrategy, routes.acceptMember);
