@@ -10,6 +10,7 @@ describe 'restify-validator', ->
 
   beforeEach ->
     @req =
+      validationErrors: []
       params:
         key: 'value'
     @v = new RestifyValidator @req, 'key', 'Error msg'
@@ -18,7 +19,6 @@ describe 'restify-validator', ->
 
     it 'should set the attributes on the validator', ->
       expect(@v._req).to.be.equal @req
-      expect(@req.validationErrors).to.be.like []
       expect(@v._param).to.be.equal 'key'
       expect(@v._value).to.be.equal 'value'
       expect(@v._error_msg).to.be.equal 'Error msg'

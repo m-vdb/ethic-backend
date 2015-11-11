@@ -3,7 +3,6 @@ var validator = require('validator');
 
 var RestifyValidator = function (req, param, error_msg) {
   this._req = req;
-  this._req.validationErrors = [];
   this._param = param;
   this._value = req.params[param];
   this._error_msg = error_msg;
