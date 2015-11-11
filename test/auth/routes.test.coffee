@@ -78,12 +78,14 @@ describe 'authRoutes', ->
         .end (err, res, body) =>
           return done(err) if err
           # cookie is like set-cookie: 'ethic=***; Secure'
-          [cookie, secure] = res.headers['set-cookie'][0].split('; ')
+          [cookie, domain, secure] = res.headers['set-cookie'][0].split('; ')
           [cookieName, token] = cookie.split('=')
+          expect(domain).to.be.equal 'Domain=localhost'
           expect(secure).to.be.equal 'Secure'
           expect(cookieName).to.be.equal config.get('cookieName')
           decoded = jwt.verify token, config.get('authSecret'), issuer: 'ethic'
           expect(decoded.uid).to.be.equal @member._id.toString()
+          expect(body).to.be.like @member.toJSON()
           done()
 
 

@@ -5,6 +5,7 @@
     "apiKey": "dummy"
   },
   "cookieOptions": {
-    "secure": true
+    "secure": true,
+    "domain": "localhost"
   }
 }

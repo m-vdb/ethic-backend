@@ -3,6 +3,10 @@
   "authSecret": "",
   "cookieName": "ethic-bcknd-dev",
   "cookieOptions": {},
+  "corsOptions": {
+    "origins": ["*"],
+    "credentials": true
+  },
   "mongoUri": "mongodb://localhost/ethic",
   "mongoOptions": {},
   "redisOptions": {
