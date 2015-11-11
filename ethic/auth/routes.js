@@ -6,8 +6,8 @@ var utils = require('./utils.js');
 
 module.exports = {
   authenticate: function (req, res, next) {
-    req.assert('email', 'Invalid email').notEmpty().isEmail();
-    req.assert('password', 'Invalid password').notEmpty();
+    req.assert('email', 'Invalid email').isLength(1).isEmail();
+    req.assert('password', 'Invalid password').isLength(1);
     if (req.sendValidationErrorIfAny()) return next();
 
     utils.checkMemberPassword(req.params.email, req.params.password, function (err, user, authErr) {

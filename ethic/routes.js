@@ -23,11 +23,11 @@ module.exports = {
    * a background check needs to run.
    */
   createMember: function (req, res, next) {
-    req.assert('ssn', 'Invalid ssn').notEmpty().isInt();
-    req.assert('firstName', 'Invalid firstName').notEmpty().isAlpha();
-    req.assert('lastName', 'Invalid lastName').notEmpty().isAlpha();
-    req.assert('email', 'Invalid email').notEmpty().isEmail();
-    req.assert('password', 'Invalid password').notEmpty();
+    req.assert('ssn', 'Invalid ssn').isLength(1).isInt();
+    req.assert('firstName', 'Invalid firstName').isLength(1).isAlpha();
+    req.assert('lastName', 'Invalid lastName').isLength(1).isAlpha();
+    req.assert('email', 'Invalid email').isLength(1).isEmail();
+    req.assert('password', 'Invalid password').isLength(1);
     if (req.sendValidationErrorIfAny()) return next();
 
     var member = new Member({
@@ -50,8 +50,7 @@ module.exports = {
    * Get member data.
    */
   member: function (req, res, next) {
-    // TODO: upgrade .isLength(24, 24) not available
-    req.assert('id', 'Invalid id').notEmpty().isHexadecimal();
+    req.assert('id', 'Invalid id').isLength(24, 24).isHexadecimal();
     if (req.sendValidationErrorIfAny()) return next();
 
     req.getDocumentOr404(Member, {_id: req.params.id}, function (err, member) {
@@ -66,8 +65,7 @@ module.exports = {
    * check came back positive.
    */
   acceptMember: function (req, res, next) {
-    // TODO: upgrade .isLength(24, 24) not available
-    req.assert('id', 'Invalid id').notEmpty().isHexadecimal();
+    req.assert('id', 'Invalid id').isLength(24, 24).isHexadecimal();
     if (req.sendValidationErrorIfAny()) return next();
 
     req.getDocumentOr404(Member, {_id: req.params.id}, function (err, member) {
@@ -85,8 +83,7 @@ module.exports = {
    * check came back negative.
    */
   denyMember: function (req, res, next) {
-    // TODO: upgrade .isLength(24, 24) not available
-    req.assert('id', 'Invalid id').notEmpty().isHexadecimal();
+    req.assert('id', 'Invalid id').isLength(24, 24).isHexadecimal();
     if (req.sendValidationErrorIfAny()) return next();
 
     req.getDocumentOr404(Member, {_id: req.params.id}, function (err, member) {
@@ -103,8 +100,7 @@ module.exports = {
    * List all the member policies.
    */
   memberPolicies: function (req, res, next) {
-    // TODO: upgrade .isLength(24, 24) not available
-    req.assert('id', 'Invalid id').notEmpty().isHexadecimal();
+    req.assert('id', 'Invalid id').isLength(24, 24).isHexadecimal();
     if (req.sendValidationErrorIfAny()) {
       return next();
     }
@@ -127,9 +123,8 @@ module.exports = {
    * Create a member policy.
    */
   createMemberPolicy: function (req, res, next) {
-    // TODO: upgrade .isLength(24, 24) not available
-    req.assert('id', 'Invalid id').notEmpty().isHexadecimal();
-    req.assert('type', 'Invalid type').notEmpty().isIn(Policy.getPolicyTypes());
+    req.assert('id', 'Invalid id').isLength(24, 24).isHexadecimal();
+    req.assert('type', 'Invalid type').isLength(1).isIn(Policy.getPolicyTypes());
     if (req.sendValidationErrorIfAny()) return next();
 
     // get policy model class
