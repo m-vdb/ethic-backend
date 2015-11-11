@@ -169,6 +169,13 @@ describe 'routes', ->
         .expectStatus 404
         .end done
 
+    it 'should return 400 if member id desnt have the right length', (done) ->
+      @api
+        .get '/members/000000'
+        .json()
+        .expectStatus 400
+        .end done
+
     it 'should return 400 if member id is invalid', (done) ->
       @api
         .get '/members/dayum'
@@ -198,6 +205,13 @@ describe 'routes', ->
         .post '/members/000000000000000000000000/accept'
         .json()
         .expectStatus 404
+        .end done
+
+    it 'should return 400 if member id desnt have the right length', (done) ->
+      @api
+        .post '/members/000000/accept'
+        .json()
+        .expectStatus 400
         .end done
 
     it 'should return 400 if member id is invalid', (done) ->
@@ -240,6 +254,13 @@ describe 'routes', ->
         .post '/members/000000000000000000000000/deny'
         .json()
         .expectStatus 404
+        .end done
+
+    it 'should return 400 if member id desnt have the right length', (done) ->
+      @api
+        .post '/members/000000/deny'
+        .json()
+        .expectStatus 400
         .end done
 
     it 'should return 400 if member id is invalid', (done) ->
@@ -293,6 +314,13 @@ describe 'routes', ->
         .expectStatus 404
         .end done
 
+    it 'should return 400 if member id desnt have the right length', (done) ->
+      @api
+        .get '/members/000000/policies'
+        .json()
+        .expectStatus 400
+        .end done
+
     it 'should return 400 if member id is invalid', (done) ->
       @api
         .get '/members/dayum/policies'
@@ -338,6 +366,13 @@ describe 'routes', ->
         .end done
 
   describe 'createMemberPolicy', ->
+
+    it 'should return 400 if member id desnt have the right length', (done) ->
+      @api
+        .post '/members/000000/policies'
+        .json()
+        .expectStatus 400
+        .end done
 
     it 'should return 400 if member id is invalid', (done) ->
       @api
