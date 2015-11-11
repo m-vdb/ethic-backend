@@ -1,5 +1,4 @@
 var restify = require('restify'),
-    validator = require('restify-validator'),
     passport = require('passport'),
     mongoose = require('mongoose'),
     web3 = require('web3'),
@@ -31,7 +30,6 @@ server.use(restify.bodyParser());
 server.use(restify.CORS(config.get('corsOptions')));
 
 // utils
-server.use(validator);
 server.use(restifyMongooseUtils());
 server.use(restifyUtils());
 
