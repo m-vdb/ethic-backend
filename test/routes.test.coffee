@@ -4,10 +4,8 @@ ObjectId = require('mongoose').Types.ObjectId
 config = require 'config'
 
 cars = require '../ethic/utils/cars.js'
-queues = require '../ethic/queues.js'
 Member = require '../ethic/models/member.js'
 policies = require '../ethic/models/policy.js'
-AddMemberPolicyTask = require('../ethic/tasks').AddMemberPolicyTask
 Policy = policies.Policy
 CarPolicy = policies.CarPolicy
 
@@ -465,28 +463,9 @@ describe 'routes', ->
       .expectStatus 200
       .end (err, res, body) =>
         done(err) if err
-
-        expect(queues.main.testMode.jobs.length).to.be.equal 1
-        job = queues.main.testMode.jobs[0]
-        expect(job.type).to.be.equal 'AddMemberPolicyTask'
-        expect(job.data).to.be.like
-          contractType: 'ca'
-          policyId: body.id
         CarPolicy.findOne _id: body.id, (err, policy) ->
           done(err) if err
           done(if policy then null else new Error('policy not saved'))
-
-    it 'should return 500 if there was an issue while creating the task', (done) ->
-      @sinon.stub AddMemberPolicyTask, 'delay', (data, cb) -> cb('Error, dude')
-      @api
-      .post '/members/' + @member._id.toString() + '/policies'
-      .json()
-      .send
-        type: 'CarPolicy'
-        contractType: 'ca'
-        car_vin: 'ABCDEF1234567890Y'
-      .expectStatus 500
-      .end done
 
   describe 'memberClaims', ->
     it 'should be dummy', (done) ->

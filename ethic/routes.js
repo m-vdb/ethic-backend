@@ -5,8 +5,7 @@ var restify = require('restify'),
 
 var ethUtils = require('./utils/eth.js'),
     Member = require('./models/member.js'),
-    Policy = require('./models/policy.js').Policy,
-    AddMemberPolicyTask = require('./tasks').AddMemberPolicyTask;
+    Policy = require('./models/policy.js').Policy;
 
 
 module.exports = {
@@ -143,15 +142,8 @@ module.exports = {
       policy.save(function (err) {
         if (err) return next(new restify.errors.BadRequestError(err.message));
 
-        AddMemberPolicyTask.delay({
-          contractType: policy.contractType,
-          policyId: policy._id.toString()
-        }, function (err) {
-          if (err) return next(err);
-
-          res.json({id: policy._id});
-          next();
-        });
+        res.json({id: policy._id});
+        next();
       });
     });
   },
