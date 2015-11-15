@@ -1,9 +1,11 @@
+// mongodb needs to be configured before
+require('./mongo');
+
 var restify = require('restify'),
     passport = require('passport'),
-    mongoose = require('mongoose'),
     web3 = require('web3'),
-    CookieParser = require('restify-cookies'),
-    config = require('config');
+    config = require('config'),
+    CookieParser = require('restify-cookies');
 
 var web3Admin = require('./utils/web3-admin.js'),
     routes = require('./routes.js'),
@@ -49,11 +51,9 @@ server.post('/members/:id/accept', jwtStrategy, routes.acceptMember);
 server.post('/members/:id/deny', jwtStrategy, routes.denyMember);
 server.get('/members/:id/policies', jwtStrategy, routes.memberPolicies);
 server.post('/members/:id/policies', jwtStrategy, routes.createMemberPolicy);
+server.post('/members/:id/policies/:policyId/proof', jwtStrategy, routes.updatePolicyProofOfInsurance);
 server.get('/members/:id/claims', jwtStrategy, routes.memberClaims);
 server.post('/members/:id/claims', jwtStrategy, routes.createMemberClaims);
 
-
-// mongodb
-mongoose.connect(config.get('mongoUri'), config.get('mongoOptions'));
 
 module.exports = server;
