@@ -1,10 +1,12 @@
 chai = require 'chai'
 expect = chai.expect
 mongoose = require 'mongoose'
+path = require "path"
 
+gridFs = require('../../ethic/mongo').gridfs
 policies = require '../../ethic/models/policy.js'
 cars = require '../../ethic/utils/cars.js'
-
+PROOF_OF_INSURANCE = path.normalize(__dirname + '/../data/proof-of-insurance.png')
 
 describe 'Policy', ->
 
@@ -22,6 +24,25 @@ describe 'Policy', ->
   describe 'getPolicyTypes', ->
     it 'should return a list of policy types', ->
       expect(policies.Policy.getPolicyTypes()).to.be.like ['CarPolicy']
+
+  describe 'saveProofOfInsurance', ->
+
+    beforeEach ->
+      @policy = new policies.Policy()
+
+    it 'should save a file in gridfs and save its id on the policy', (done) ->
+      file =
+        path: PROOF_OF_INSURANCE
+        type: 'image/png'
+      @policy.saveProofOfInsurance file, (err) =>
+        expect(err).to.be.null
+        expect(@policy.proofId).to.match /[0-9a-f]{24}/
+        gridFs.findOne _id: @policy.proofId, (err, file) =>
+          done(err) if err
+          done('missing file') unless file
+          expect(file.filename).to.match new RegExp('proof_[0-9]+_' + @policy._id + '.png')
+          expect(file.contentType).to.be.equal 'image/png'
+          done()
 
 
 describe 'CarPolicy', ->
