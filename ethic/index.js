@@ -26,9 +26,12 @@ server.use(CookieParser.parse);
 server.use(passport.initialize());
 
 // common handlers
+server.use(restify.fullResponse())
 server.use(restify.acceptParser(server.acceptable));
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
+restify.CORS.ALLOW_HEADERS.push('cache-control');
+restify.CORS.ALLOW_HEADERS.push('x-requested-with');
 server.use(restify.CORS(config.get('corsOptions')));
 
 // utils
