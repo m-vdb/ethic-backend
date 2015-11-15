@@ -2,6 +2,7 @@ chai = require 'chai'
 expect = chai.expect
 ObjectId = require('mongoose').Types.ObjectId
 config = require 'config'
+path = require 'path'
 
 cars = require '../ethic/utils/cars.js'
 Member = require '../ethic/models/member.js'
@@ -167,7 +168,7 @@ describe 'routes', ->
         .expectStatus 404
         .end done
 
-    it 'should return 400 if member id desnt have the right length', (done) ->
+    it 'should return 400 if member id doesnt have the right length', (done) ->
       @api
         .get '/members/000000'
         .json()
@@ -205,7 +206,7 @@ describe 'routes', ->
         .expectStatus 404
         .end done
 
-    it 'should return 400 if member id desnt have the right length', (done) ->
+    it 'should return 400 if member id doesnt have the right length', (done) ->
       @api
         .post '/members/000000/accept'
         .json()
@@ -254,7 +255,7 @@ describe 'routes', ->
         .expectStatus 404
         .end done
 
-    it 'should return 400 if member id desnt have the right length', (done) ->
+    it 'should return 400 if member id doesnt have the right length', (done) ->
       @api
         .post '/members/000000/deny'
         .json()
@@ -312,7 +313,7 @@ describe 'routes', ->
         .expectStatus 404
         .end done
 
-    it 'should return 400 if member id desnt have the right length', (done) ->
+    it 'should return 400 if member id doesnt have the right length', (done) ->
       @api
         .get '/members/000000/policies'
         .json()
@@ -365,7 +366,7 @@ describe 'routes', ->
 
   describe 'createMemberPolicy', ->
 
-    it 'should return 400 if member id desnt have the right length', (done) ->
+    it 'should return 400 if member id doesnt have the right length', (done) ->
       @api
         .post '/members/000000/policies'
         .json()
@@ -466,6 +467,82 @@ describe 'routes', ->
         CarPolicy.findOne _id: body.id, (err, policy) ->
           done(err) if err
           done(if policy then null else new Error('policy not saved'))
+
+  describe 'updatePolicyProofOfInsurance', ->
+    beforeEach (done) ->
+      @filename = 'proof-of-insurance.png'
+      @filepath = path.normalize(__dirname + '/data/' + @filename)
+      @policy = new Policy
+        member: @member._id
+        initial_premium: 5000
+        initial_deductible: 50000
+      @policy.save done
+
+    afterEach (done) ->
+      @policy.remove done
+
+    it 'should return 400 if member id is invalid', (done) ->
+      @api
+      .post '/members/toto/policies/000000000000000000000000/proof'
+      .expectStatus 400
+      .end done
+
+    it 'should return 400 if policy id is invalid', (done) ->
+      @api
+      .post '/members/000000000000000000000000/policies/toto/proof'
+      .expectStatus 400
+      .end done
+
+    it 'should return 404 if member is not found', (done) ->
+      url = '/members/000000000000000000000000/policies/' + @policy._id.toString() + '/proof'
+      @api
+      .post url
+      .sendFile 'proofOfInsurance', @filename, @filepath
+      .expectStatus 404
+      .end done
+
+    it 'should return 404 if policy is not found', (done) ->
+      url = '/members/' + @member._id.toString() + '/policies/000000000000000000000000/proof'
+      @api
+      .post url
+      .sendFile 'proofOfInsurance', @filename, @filepath
+      .expectStatus 404
+      .end done
+
+    it 'should return 400 if member is not active', (done) ->
+      @member.state = 'inactive'
+      @member.save (err) =>
+        return done(err) if err
+        url = '/members/' + @member._id.toString() + '/policies/' + @policy._id.toString() + '/proof'
+        @api
+        .post url
+        .sendFile 'proofOfInsurance', @filename, @filepath
+        .expectStatus 400
+        .end done
+
+    it 'should return 200 if managed to save the policy', (done) ->
+      url = '/members/' + @member._id.toString() + '/policies/' + @policy._id.toString() + '/proof'
+      @api
+      .post url
+      .sendFile 'proofOfInsurance', @filename, @filepath
+      .expectStatus 200
+      .end (err, res, body) =>
+        done(err) if err
+        Policy.findOne _id: @policy._id, (err, policy) =>
+          expect(policy.proofId).to.be.ok
+          done()
+
+    it 'should return 200 if managed to save the policy', (done) ->
+      url = '/members/' + @member._id.toString() + '/policies/' + @policy._id.toString() + '/proof'
+      @api
+      .post url
+      .sendFile 'proofOfInsurance', @filename, @filepath
+      .expectStatus 200
+      .end (err, res, body) =>
+        done(err) if err
+        Policy.findOne _id: @policy._id, (err, policy) =>
+          expect(policy.proofId).to.be.ok
+          done()
 
   describe 'memberClaims', ->
     it 'should be dummy', (done) ->
