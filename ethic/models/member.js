@@ -1,7 +1,8 @@
 var mongoose = require('mongoose'),
     _ = require('underscore');
 
-var contracts = require('../contracts');
+var contracts = require('../contracts'),
+    passwordUtils = require('../auth/password');
 var states = ['new', 'active', 'inactive', 'denied'];
 
 var memberSchema = new mongoose.Schema({
@@ -51,6 +52,15 @@ memberSchema.method({
     this.contractTypes.push(contractType);
     this.save(cb);
   }
+});
+
+
+memberSchema.pre('save', function (cb) {
+  if (!this.isNew) return cb();
+  if (!this.password) return cb(new Error('Missing password.'));
+
+  this.password = passwordUtils.hashPassword(this.password);
+  cb();
 });
 
 module.exports = mongoose.model('Member', memberSchema);
