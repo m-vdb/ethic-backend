@@ -1,5 +1,6 @@
 var jwt = require('jsonwebtoken'),
-    config = require('config');
+    config = require('config'),
+    crypto = require('crypto');
 
 var Member = require('../models/member.js');
 
@@ -40,5 +41,12 @@ module.exports = {
       return done(null, true, {id: payload.uid});
     }
     done(null, false, {message: 'Incorrect token uid.'});
+  },
+
+  /**
+   * Hash a password. Used before saving it in database.
+   */
+  hashPassword: function (password) {
+
   }
 };
