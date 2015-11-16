@@ -1,8 +1,8 @@
 var jwt = require('jsonwebtoken'),
-    config = require('config'),
-    crypto = require('crypto');
+    config = require('config');
 
-var Member = require('../models/member.js');
+var passwordUtils = require('./password'),
+    Member = require('../models/member.js');
 
 module.exports = {
   /**
@@ -15,7 +15,7 @@ module.exports = {
       if (err) {
         return done(err, false);
       }
-      if (!user || user.password !== password) {
+      if (!user || !passwordUtils.checkPassword(user.password, password)) {
         return done(null, false, {message: "Incorrect credentials."});
       }
       return done(null, user);
@@ -41,15 +41,5 @@ module.exports = {
       return done(null, true, {id: payload.uid});
     }
     done(null, false, {message: 'Incorrect token uid.'});
-  },
-
-  /**
-   * Hash a password. Used before saving it in database.
-   */
-  hashPassword: function (password) {
-    return crypto
-      .createHmac("sha256", config.get('authSecret'))
-      .update(password)
-      .digest('hex');
   }
 };
