@@ -31,8 +31,9 @@ describe 'AddMemberPolicyTask', ->
       email: "donaldtrump@asshole.com"
       address: "0x007"
       state: 'active'
+      password: 'dayum'
     @member.save (err) =>
-      done(err) if err
+      return done(err) if err
 
       @policy = new CarPolicy
         member: @member
@@ -50,7 +51,7 @@ describe 'AddMemberPolicyTask', ->
       @member.contractTypes = ['ca']
       @member.address = '0x007'
       @member.save (err) =>
-        done(err) if err
+        return done(err) if err
 
         @task.run
           contractType: 'ca'
@@ -64,7 +65,7 @@ describe 'AddMemberPolicyTask', ->
       @sinon.stub contracts.ca, 'create_member', (addr, count, cb) -> cb()
       @member.address = '0x007'
       @member.save (err) =>
-        done(err) if err
+        return done(err) if err
 
         @task.run
           contractType: 'ca'
@@ -78,13 +79,13 @@ describe 'AddMemberPolicyTask', ->
       @sinon.stub contracts.ca, 'new_member', (cb) -> cb(null, '0x008')
       @member.address = null
       @member.save (err) =>
-        done(err) if err
+        return done(err) if err
 
         @task.run
           contractType: 'ca'
           policyId: @policy.id.toString()
         , (err) =>
-          done(err) if err
+          return done(err) if err
           expect(contracts.ca.new_member).to.have.been.called
           Member.findOne _id: @member._id, (err, member) ->
             throw 'error' if err or not member
@@ -96,7 +97,7 @@ describe 'AddMemberPolicyTask', ->
       @sinon.stub contracts.ca, 'new_member', (cb) -> cb('dayum', '0x009')
       @member.address = null
       @member.save (err) =>
-        done(err) if err
+        return done(err) if err
 
         @task.run
           contractType: 'ca'
@@ -113,7 +114,7 @@ describe 'AddMemberPolicyTask', ->
       @sinon.stub contracts.ca, 'create_member', (addr, count, cb) -> cb('oops')
       @member.address = '0x007'
       @member.save (err) =>
-        done(err) if err
+        return done(err) if err
 
         @task.run
           contractType: 'ca'
@@ -128,7 +129,7 @@ describe 'AddMemberPolicyTask', ->
       @sinon.stub Member::, 'addContractType', (t, cb) -> cb('oups')
       @member.address = null
       @member.save (err) =>
-        done(err) if err
+        return done(err) if err
 
        @task.run
         contractType: 'ca'

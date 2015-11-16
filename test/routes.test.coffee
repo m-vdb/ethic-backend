@@ -21,6 +21,7 @@ describe 'routes', ->
       email: "donaldtrump@asshole.com"
       address: "0x007"
       state: 'active'
+      password: 'doh'
     @member.save done
     @sinon.stub cars, 'decodeVin', (vin, cb) ->
       cb null,
@@ -86,6 +87,7 @@ describe 'routes', ->
           code: "BadRequestError"
           message: "Bad parameters."
         .end done
+
     it 'should yield 400 if invalid lastName', (done) ->
       @api
         .post '/members'
@@ -140,7 +142,7 @@ describe 'routes', ->
             expect(member.lastName).to.be.equal "Swanson"
             expect(member.email).to.be.equal "joeswanson@gmail.com"
             expect(member.state).to.be.equal "new"
-            expect(member.password).to.be.equal "yop"
+            expect(member.password).to.be.equal "5a16a5a77362b7a7eaca8203987915283d117ee05daf26ceaa7ca2e04ec4ffe0"
             done()
 
     it 'should return error if couldnt save member', (done) ->
