@@ -21,10 +21,17 @@ module.exports = {
     });
   },
 
+  /**
+   * Get the JSON web token from the user id.
+   */
   getJWT: function (uid) {
     return jwt.sign({uid: uid}, config.get('authSecret'), {issuer: 'ethic'});
   },
 
+  /**
+   * Verify the JSON web token used in request
+   * allows access to the resource.
+   */
   verifyJWT: function (req, payload, done) {
     // no id in request params, but cookie here
     // or id in params should be the same
