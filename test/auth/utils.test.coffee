@@ -86,3 +86,8 @@ describe 'authUtils', ->
         expect(auth).to.be.false
         expect(info).to.be.like message: 'Incorrect token uid.'
         done()
+
+  describe 'hashPassword', ->
+
+    it 'should encrypt the password with our auth secret', ->
+      expect(authUtils.hashPassword 'hello dude').to.be.equal 'd52e05eb7e59eeffc429fbe1d847e353d9daf387891eeeba45eca3ddbf7ca1ff'

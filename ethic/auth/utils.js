@@ -47,6 +47,9 @@ module.exports = {
    * Hash a password. Used before saving it in database.
    */
   hashPassword: function (password) {
-
+    return crypto
+      .createHmac("sha256", config.get('authSecret'))
+      .update(password)
+      .digest('hex');
   }
 };
