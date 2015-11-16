@@ -1,7 +1,8 @@
 var jwt = require('jsonwebtoken'),
     config = require('config');
 
-var Member = require('../models/member.js');
+var passwordUtils = require('./password'),
+    Member = require('../models/member.js');
 
 module.exports = {
   /**
@@ -14,17 +15,24 @@ module.exports = {
       if (err) {
         return done(err, false);
       }
-      if (!user || user.password !== password) {
+      if (!user || !passwordUtils.checkPassword(user.password, password)) {
         return done(null, false, {message: "Incorrect credentials."});
       }
       return done(null, user);
     });
   },
 
+  /**
+   * Get the JSON web token from the user id.
+   */
   getJWT: function (uid) {
     return jwt.sign({uid: uid}, config.get('authSecret'), {issuer: 'ethic'});
   },
 
+  /**
+   * Verify the JSON web token used in request
+   * allows access to the resource.
+   */
   verifyJWT: function (req, payload, done) {
     // no id in request params, but cookie here
     // or id in params should be the same

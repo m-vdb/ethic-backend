@@ -13,6 +13,7 @@ describe 'Member', ->
       ssn: '111-222-3333'
       email: 'john@oliver.doh'
       address: '3528175afde786512'
+      password: 'coco'
     @member.save done
     @sinon.stub cars, 'decodeVin', (vin, cb) ->
       cb null,
@@ -96,8 +97,49 @@ describe 'Member', ->
         expect(@member.contractTypes).to.be.like ['ca']
         done()
 
-  it 'should not add the contract type if already here', (done) ->
+    it 'should not add the contract type if already here', (done) ->
       @member.contractTypes = ['ca']
       @member.addContractType 'wa', =>
         expect(@member.contractTypes).to.be.like ['ca', 'wa']
         done()
+
+  describe 'preSave', ->
+
+    it 'should return error if password is missing', (done) ->
+      member = new Member
+        firstName: 'john'
+        lastName: 'doe'
+        ssn: '111-222-4444'
+        email: 'john@doe.doe'
+      member.save (err) ->
+        expect(err).to.be.like new Error('Missing password.')
+        done()
+
+    it 'should hash password and continue to save the member', (done) ->
+      member = new Member
+        firstName: 'john'
+        lastName: 'doe'
+        ssn: '111-222-4444'
+        email: 'john@doe.doe'
+        password: 'a password'
+      member.save (err) ->
+        return done(err) if err
+        expect(member.password).to.be.equal 'f81cd6e542b4f272d06510e461439b25053fae87535ff83a4e4e185633b72ac1'
+        member.remove done
+
+    it 'should not do a thing if the member is not new', (done) ->
+      member = new Member
+        firstName: 'john'
+        lastName: 'doe'
+        ssn: '111-222-4444'
+        email: 'john@doe.doe'
+        password: 'a password'
+      member.save (err) ->
+        return done(err) if err
+        expect(member.password).to.be.equal 'f81cd6e542b4f272d06510e461439b25053fae87535ff83a4e4e185633b72ac1'
+        member.firstName = 'John'
+        member.save (err) ->
+          return done(err) if err
+          # didn't change
+          expect(member.password).to.be.equal 'f81cd6e542b4f272d06510e461439b25053fae87535ff83a4e4e185633b72ac1'
+          member.remove done
