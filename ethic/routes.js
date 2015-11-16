@@ -1,7 +1,8 @@
 var restify = require('restify'),
     web3 = require('web3'),
     _ = require('underscore'),
-    config = require('config');
+    config = require('config'),
+    fs = require('fs');
 
 var ethUtils = require('./utils/eth.js'),
     Member = require('./models/member.js'),
@@ -144,6 +145,31 @@ module.exports = {
 
         res.json({id: policy._id});
         next();
+      });
+    });
+  },
+  /**
+   * Update proof of insurance for a policy
+   */
+  updatePolicyProofOfInsurance: function (req, res, next) {
+    req.assert('id', 'Invalid id').isLength(24, 24).isHexadecimal();
+    req.assert('policyId', 'Invalid policy id').isLength(24, 24).isHexadecimal();
+    req.assert('files.proofOfInsurance.size', 'File too big.').isInt({max: 10000000});  // 10 MB
+    req.assert('files.proofOfInsurance.type', 'Wrong content type.').matches(/image\/.+/i);
+    if (req.sendValidationErrorIfAny()) return next();
+
+    req.getDocumentOr404(Member, {_id: req.params.id}, function (err, member) {
+      if (err) return next(err);
+      if (!member.isActive()) return next(new restify.errors.BadRequestError('Account is not active.'));
+
+      req.getDocumentOr404(Policy, {_id: req.params.policyId}, function (err, policy) {
+        if (err) return next(err);
+
+        var file = req.files.proofOfInsurance;
+        policy.saveProofOfInsurance(file, function (err) {
+          res.json({});
+          fs.unlink(file.path, next);
+        });
       });
     });
   },

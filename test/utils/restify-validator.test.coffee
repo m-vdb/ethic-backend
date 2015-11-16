@@ -23,6 +23,16 @@ describe 'restify-validator', ->
       expect(@v._value).to.be.equal 'value'
       expect(@v._error_msg).to.be.equal 'Error msg'
 
+    it 'should work with req.files too', ->
+      @req.files =
+        someFile:
+          value: 'yes'
+      v = new RestifyValidator @req, 'files.someFile.value', 'Error msg'
+      expect(v._req).to.be.equal @req
+      expect(v._param).to.be.equal 'someFile.value'
+      expect(v._value).to.be.equal 'yes'
+      expect(v._error_msg).to.be.equal 'Error msg'
+
   describe 'validator methods', ->
     for own name of validator
       if not (
@@ -43,3 +53,27 @@ describe 'restify-validator', ->
       expect(@req.validationErrors).to.be.like []
       expect(@v.isInt()).to.be.equal @v
       expect(@req.validationErrors).to.be.like ['Error msg']
+
+  describe '_getValue', ->
+    it 'should retrieve a value on the params', ->
+      req =
+        params:
+          key: 'value'
+      v = new RestifyValidator req, 'key'
+      expect(v._value).to.be.equal 'value'
+
+    it 'should retrieve a nested value on the params', ->
+      req =
+        params:
+          key:
+            level2:
+              last: 'yop'
+      v = new RestifyValidator req, 'key.level2.last'
+      expect(v._value).to.be.equal 'yop'
+
+    it 'should catch errors and return null', ->
+      req =
+        params:
+          key: 'value'
+      v = new RestifyValidator req, 'dumb.key.nested'
+      expect(v._value).to.be.null

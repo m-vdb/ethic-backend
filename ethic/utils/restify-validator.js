@@ -4,7 +4,13 @@ var validator = require('validator');
 var RestifyValidator = function (req, param, error_msg) {
   this._req = req;
   this._param = param;
-  this._value = req.params[param];
+  if (param.indexOf('files.') === 0) {
+    this._param = param.substring(6);
+    this._value = this._getValue(req.files);
+  }
+  else {
+    this._value = this._getValue(req.params);
+  }
   this._error_msg = error_msg;
 };
 
@@ -18,6 +24,21 @@ RestifyValidator.bindMethod = function (func) {
 
     return this;
   };
+};
+
+RestifyValidator.prototype._getValue = function (params) {
+  var paramList = this._param.split('.');
+  var value = params;
+
+  try {
+    paramList.map(function(item) {
+      value = value[item];
+    });
+    return value;
+  }
+  catch (e) {
+    return null;
+  }
 };
 
 for (var name in validator) {

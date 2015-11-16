@@ -1,14 +1,18 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose'),
+    fs = require('fs'),
+    path = require('path');
 require('mongoose-schema-extend');
 
 var contracts = require('../contracts'),
-    cars = require('../utils/cars.js');
+    cars = require('../utils/cars.js'),
+    gridFs = require('../mongo').gridfs;
 
 var policySchema = new mongoose.Schema({
   member: {type: mongoose.Schema.Types.ObjectId, ref: 'Member'},
   initial_premium: Number,
   initial_deductible: Number,
-  contractType: {type: String, enum: contracts.contractTypes}
+  contractType: {type: String, enum: contracts.contractTypes},
+  proofId: mongoose.Schema.Types.ObjectId
 }, {
   collection: 'policies',
   discriminatorKey: '_type',
@@ -35,6 +39,26 @@ policySchema.static({
     return ['CarPolicy'];
   }
 });
+
+policySchema.method({
+  saveProofOfInsurance: function (file, cb) {
+    var writeStream = gridFs.createWriteStream({
+      filename: 'proof_' + Math.floor(new Date() / 1000) + '_' + this._id + path.extname(file.path),
+      content_type: file.type
+    });
+
+    var policy = this;
+    var stream = fs.createReadStream(file.path);
+    stream.pipe(writeStream);
+    writeStream.on('error', cb);
+    writeStream.on('close', function (gridFile) {
+      // save id on policy
+      policy.proofId = gridFile._id;
+      policy.save(cb);
+    });
+  }
+});
+
 
 var carPolicySchema = policySchema.extend({
   car_vin: {type: String, maxLength: 17, minLength: 17, uppercase: true},
