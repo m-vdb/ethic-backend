@@ -15,5 +15,8 @@
   },
   "edmunds": {
     "apiKey": ""
+  },
+  "stripe": {
+      "secretKey": null
   }
 }

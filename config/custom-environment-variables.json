@@ -2,5 +2,8 @@
   "authSecret": "AUTH_SECRET_KEY",
   "edmunds": {
     "apiKey": "EDMUNDS_API_KEY"
+  },
+  "stripe": {
+    "secretKey": "STRIPE_SECRET_KEY"
   }
 }
