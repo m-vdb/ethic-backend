@@ -191,13 +191,13 @@ describe 'routes', ->
         .expectStatus 200
         .expectBody
           id: @member._id.toString()
-          ssn: '7027321'
           firstName: "Donald"
           lastName: "Trump"
           email: "donaldtrump@asshole.com"
           address: "0x007"
           state: 'active'
           contractTypes: []
+          stripeCards: []
         .end done
 
   describe 'acceptMember', ->
