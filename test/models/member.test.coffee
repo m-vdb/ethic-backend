@@ -14,6 +14,8 @@ describe 'Member', ->
       email: 'john@oliver.doh'
       address: '3528175afde786512'
       password: 'coco'
+      stripeId: 'some-id'
+      stripeCards: ['1234', '5678']
     @member.save done
     @sinon.stub cars, 'decodeVin', (vin, cb) ->
       cb null,
@@ -143,3 +145,24 @@ describe 'Member', ->
           # didn't change
           expect(member.password).to.be.equal 'f81cd6e542b4f272d06510e461439b25053fae87535ff83a4e4e185633b72ac1'
           member.remove done
+
+  describe 'toJSON', ->
+
+    it 'should ignore sensitive values', ->
+      json = @member.toJSON()
+      expect(json._id).to.be.undefined
+      expect(json.__v).to.be.undefined
+      expect(json.ssn).to.be.undefined
+      expect(json.password).to.be.undefined
+      expect(json.stripeId).to.be.undefined
+
+    it 'should serialize the other values', ->
+      expect(@member.toJSON()).to.be.like
+        id: @member._id.toString()
+        firstName: 'john'
+        lastName: 'oliver'
+        email: 'john@oliver.doh'
+        address: '3528175afde786512'
+        stripeCards: ['1234', '5678']
+        contractTypes: []
+        state: 'new'
