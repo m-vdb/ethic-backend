@@ -13,7 +13,9 @@ var memberSchema = new mongoose.Schema({
   password: {type: String},  // TODO: store hashed version + validation rules
   state: {type: String, default: 'new', enum: states},
   address: String,
-  contractTypes: [{type: String, enum: contracts.contractTypes}]
+  contractTypes: [{type: String, enum: contracts.contractTypes}],
+  stripeId: String,
+  stripeCards: [String]
 }, {
   collection: 'members',
   toJSON: {
