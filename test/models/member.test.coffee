@@ -7,6 +7,14 @@ cars = require '../../ethic/utils/cars.js'
 
 describe 'Member', ->
   beforeEach (done) ->
+    @sinon.stub cars, 'decodeVin', (vin, cb) ->
+      cb null,
+        year: 2000,
+        model: 'Roadster'
+        model_id: 'roadster'
+        make: 'Tesla'
+        make_id: 'tesla'
+
     @member = new Member
       firstName: 'john'
       lastName: 'oliver'
@@ -17,13 +25,6 @@ describe 'Member', ->
       stripeId: 'some-id'
       stripeCards: ['1234', '5678']
     @member.save done
-    @sinon.stub cars, 'decodeVin', (vin, cb) ->
-      cb null,
-        year: 2000,
-        model: 'Roadster'
-        model_id: 'roadster'
-        make: 'Tesla'
-        make_id: 'tesla'
 
   afterEach (done) ->
     @member.remove done
