@@ -10,6 +10,7 @@ var restify = require('restify'),
 var web3Admin = require('./utils/web3-admin.js'),
     routes = require('./routes.js'),
     auth = require('./auth'),
+    payment = require('./payment'),
     restifyUtils = require('./utils/restify'),
     restifyMongooseUtils = require('./utils/restify-mongoose');
 
@@ -58,5 +59,7 @@ server.post('/members/:id/policies/:policyId/proof', jwtStrategy, routes.updateP
 server.get('/members/:id/claims', jwtStrategy, routes.memberClaims);
 server.post('/members/:id/claims', jwtStrategy, routes.createMemberClaims);
 
+// payment routes
+server.post('/members/:id/stripe-customer', jwtStrategy, payment.routes.createStripeCustomer);
 
 module.exports = server;
