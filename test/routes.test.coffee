@@ -14,6 +14,14 @@ describe 'routes', ->
 
   beforeEach (done) ->
     @noauth()
+    @sinon.stub cars, 'decodeVin', (vin, cb) ->
+      cb null,
+        year: 2000,
+        model: 'Roadster'
+        model_id: 'roadster'
+        make: 'Tesla'
+        make_id: 'tesla'
+
     @member = new Member
       ssn: 7027321
       firstName: "Donald"
@@ -23,13 +31,6 @@ describe 'routes', ->
       state: 'active'
       password: 'doh'
     @member.save done
-    @sinon.stub cars, 'decodeVin', (vin, cb) ->
-      cb null,
-        year: 2000,
-        model: 'Roadster'
-        model_id: 'roadster'
-        make: 'Tesla'
-        make_id: 'tesla'
 
   afterEach (done) ->
     @member.remove done
