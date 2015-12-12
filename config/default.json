@@ -2,7 +2,9 @@
   "version": "0.0.1",
   "authSecret": "",
   "cookieName": "ethic-bcknd-dev",
-  "cookieOptions": {},
+  "cookieOptions": {
+    "httpOnly": true
+  },
   "corsOptions": {
     "origins": ["*"],
     "credentials": true

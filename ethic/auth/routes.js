@@ -15,7 +15,7 @@ module.exports = {
       if (authErr || !user) return next(new restify.errors.UnauthorizedError());
 
       var token = utils.getJWT(user._id);
-      res.setCookie(config.get('cookieName'), token, config.get('cookieOptions'));  // TODO: httpOnly ?
+      res.setCookie(config.get('cookieName'), token, config.get('cookieOptions'));
 
       res.json(user.toJSON());
       return next();
