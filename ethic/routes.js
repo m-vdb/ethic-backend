@@ -6,7 +6,8 @@ var restify = require('restify'),
 
 var ethUtils = require('./utils/eth.js'),
     Member = require('./models/member.js'),
-    Policy = require('./models/policy.js').Policy;
+    Policy = require('./models/policy.js').Policy,
+    Claim = require('./models/claim.js');
 
 
 module.exports = {
@@ -177,10 +178,24 @@ module.exports = {
    * List all the member claims.
    */
   memberClaims: function (req, res, next) {
-    // TODO (Ethereum):
-    // - retrieve a list of all the member's claims
-    res.json([]);
-    return next();
+    req.assert('id', 'Invalid id').isLength(24, 24).isHexadecimal();
+    if (req.sendValidationErrorIfAny()) {
+      return next();
+    }
+
+    req.getDocumentOr404(Member, {_id: req.params.id}, function (err, member) {
+      if (err) return next(err);
+      if (!member.isActive()) return next(new restify.errors.BadRequestError('Account is not active.'));
+
+      member.getClaims(function (err, claims) {
+        if (err) return next(err);
+
+        res.json(_.map(claims, function (claim) {
+          return claim.toJSON();
+        }));
+        next();
+      });
+    });
   },
   /**
    * Create a member claim.

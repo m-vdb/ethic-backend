@@ -7,6 +7,7 @@ path = require 'path'
 cars = require '../ethic/utils/cars.js'
 Member = require '../ethic/models/member.js'
 policies = require '../ethic/models/policy.js'
+Claim = require '../ethic/models/claim.js'
 Policy = policies.Policy
 CarPolicy = policies.CarPolicy
 
@@ -548,10 +549,83 @@ describe 'routes', ->
           done()
 
   describe 'memberClaims', ->
-    it 'should be dummy', (done) ->
+    beforeEach (done) ->
+      @policy = new Policy
+        member: @member._id
+        initial_premium: 5000
+        initial_deductible: 50000
+      @policy.save (err) =>
+        return done(err) if err
+        @claim = new Claim
+          member: @member._id
+          policy: @policy._id
+          description: 'Something bad.'
+        @claim.save done
+
+    afterEach (done) ->
+      @claim.remove (err) =>
+        return done(err) if err
+        @policy.remove done
+
+    it 'should return 404 if member does not exist', (done) ->
       @api
-        .get '/members/toto/claims'
+        .get '/members/000000000000000000000000/claims'
+        .json()
+        .expectStatus 404
+        .end done
+
+    it 'should return 400 if member id doesnt have the right length', (done) ->
+      @api
+        .get '/members/000000/claims'
+        .json()
+        .expectStatus 400
+        .end done
+
+    it 'should return 400 if member id is invalid', (done) ->
+      @api
+        .get '/members/dayum/claims'
+        .json()
+        .expectStatus 400
+        .end done
+
+    it 'should return 400 if account is not active', (done) ->
+      @member.state = 'new'
+      @member.save (err) =>
+        done(err) if err
+
+        @api
+          .get '/members/' + @member._id.toString() + '/claims'
+          .json()
+          .expectStatus 400
+          .expectBody
+            code: 'BadRequestError'
+            message: 'Account is not active.'
+          .end done
+
+    it 'should return a 400 if couldnt retrieve policies', (done) ->
+      @sinon.stub Member::, 'getClaims', (cb) -> cb('cannot get policies')
+      @api
+        .get '/members/' + @member._id.toString() + '/claims'
+        .json()
+        .expectStatus 500
+        .end done
+
+    it 'should return a list of policies otherwise', (done) ->
+      @api
+        .get '/members/' + @member._id.toString() + '/claims'
+        .json()
         .expectStatus 200
+        .expectBody [
+          {
+            id: @claim._id.toString()
+            policy: @policy._id.toString()
+            member: @member._id.toString()
+            description: 'Something bad.'
+            pictures: []
+            estimate: 0
+            atFault: true
+          }
+        ]
         .end done
 
   describe 'createMemberClaims', ->
