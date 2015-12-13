@@ -48,6 +48,9 @@ memberSchema.method({
   getPolicies: function (cb) {
     mongoose.model('Policy').find({member: this._id}, cb);
   },
+  getClaims: function (cb) {
+    mongoose.model('Claim').find({member: this._id}, cb);
+  },
   hasContract: function (contractType) {
     return _.contains(this.contractTypes, contractType);
   },
