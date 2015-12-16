@@ -144,6 +144,7 @@ module.exports = {
       policy.save(function (err) {
         if (err) return next(new restify.errors.BadRequestError(err.message));
 
+        // TODO: launch AddMemberPolicyTask
         res.json({id: policy._id});
         next();
       });
