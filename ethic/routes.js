@@ -202,10 +202,23 @@ module.exports = {
    * Create a member claim.
    */
   createMemberClaims: function (req, res, next) {
-    // TODO (Ethereum):
-    // - create a claim on ethereum contract
-    // - return the claim data
-    res.json({});
-    return next();
+    req.assert('id', 'Invalid id').isLength(24, 24).isHexadecimal();
+
+    if (req.sendValidationErrorIfAny()) return next();
+
+    req.getDocumentOr404(Member, {_id: req.params.id}, function (err, member) {
+      if (err) return next(err);
+      if (!member.isActive()) return next(new restify.errors.BadRequestError('Account is not active.'));
+
+      var claim = new Claim(_.extend(req.params, {member: member._id}));
+      // TODO: handle the files
+      claim.save(function (err) {
+        if (err) return next(new restify.errors.BadRequestError(err.message));
+
+        // TODO: launch AddMemberClaimTask
+        res.json({id: claim._id});
+        return next();
+      });
+    });
   }
 };

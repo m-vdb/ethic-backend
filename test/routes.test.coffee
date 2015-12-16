@@ -635,8 +635,147 @@ describe 'routes', ->
         .end done
 
   describe 'createMemberClaims', ->
-    it 'should be dummy', (done) ->
+    beforeEach (done) ->
+      @policy = new Policy
+        member: @member._id
+        initial_premium: 5000
+        initial_deductible: 50000
+      @policy.save done
+
+    afterEach (done) ->
+      @policy.remove done
+
+    it 'should return 400 if member id doesnt have the right length', (done) ->
       @api
-        .post '/members/toto/claims'
-        .expectStatus 200
+        .post '/members/000000/claims'
+        .form()
+        .expectStatus 400
         .end done
+
+    it 'should return 400 if member id is invalid', (done) ->
+      @api
+      .post '/members/dayum/claims'
+      .form()
+      .expectStatus 400
+      .end done
+
+    it 'should return 404 if cannot find member', (done) ->
+      @api
+      .post '/members/000000000000000000000000/claims'
+      .form()
+      .send
+        policy: @policy._id.toString()
+        description: 'Something bad and looooooooooooooooooooong enough.'
+        date: '2015-09-14'
+        location: 'Mexico City'
+        driversCount: 2
+        atFault: false
+        wentToGarage: true
+        estimate: 1300.15
+      .expectStatus 404
+      .end done
+
+    it 'should return 400 if member is not active', (done) ->
+      @member.state = 'new'
+      @member.save (err) =>
+        done(err) if err
+        @api
+        .post '/members/' + @member._id.toString() + '/claims'
+        .form()
+        .send
+          policy: @policy._id.toString()
+          description: 'Something bad and looooooooooooooooooooong enough.'
+          date: '2015-09-14'
+          location: 'Mexico City'
+          driversCount: 2
+          atFault: false
+          wentToGarage: true
+          estimate: 1300.15
+        .parser (data, fn) -> fn(null, JSON.parse(data))
+        .expectStatus 400
+        .expectBody
+          code: 'BadRequestError'
+          message: 'Account is not active.'
+        .end done
+
+    it 'should return 400 if description is missing', (done) ->
+      @api
+      .post '/members/' + @member._id.toString() + '/claims'
+      .form()
+      .send
+        policy: @policy._id.toString()
+        date: '2015-09-14'
+        location: 'Mexico City'
+        driversCount: 2
+        atFault: false
+        wentToGarage: true
+        estimate: 1300.15
+      .expectStatus 400
+      .end done
+
+    it 'should return 400 if date is missing', (done) ->
+      @api
+      .post '/members/' + @member._id.toString() + '/claims'
+      .form()
+      .send
+        policy: @policy._id.toString()
+        description: 'Something bad and looooooooooooooooooooong enough.'
+        location: 'Mexico City'
+        driversCount: 2
+        atFault: false
+        wentToGarage: true
+        estimate: 1300.15
+      .expectStatus 400
+      .end done
+
+    it 'should return 400 if location is missing', (done) ->
+      @api
+      .post '/members/' + @member._id.toString() + '/claims'
+      .form()
+      .send
+        policy: @policy._id.toString()
+        description: 'Something bad and looooooooooooooooooooong enough.'
+        date: '2015-09-14'
+        driversCount: 2
+        atFault: false
+        wentToGarage: true
+        estimate: 1300.15
+      .expectStatus 400
+      .end done
+
+    it 'should return 400 if description is not long enough', (done) ->
+      @api
+      .post '/members/' + @member._id.toString() + '/claims'
+      .form()
+      .send
+        policy: @policy._id.toString()
+        description: 'Something bad but too short.'
+        date: '2015-09-14'
+        location: 'Mexico City'
+        driversCount: 2
+        atFault: false
+        wentToGarage: true
+        estimate: 1300.15
+      .expectStatus 400
+      .end done
+
+    it 'should return 200 if it managed to create task', (done) ->
+      @api
+      .post '/members/' + @member._id.toString() + '/claims'
+      .form()
+      .send
+        policy: @policy._id.toString()
+        description: 'Something bad and looooooooooooooooooooong enough.'
+        date: '2015-09-14'
+        location: 'Mexico City'
+        driversCount: 2
+        atFault: false
+        wentToGarage: true
+        estimate: 1300.15
+      .parser (data, fn) -> fn(null, JSON.parse(data))
+      .expectStatus 200
+      .end (err, res, body) =>
+        done(err) if err
+        Claim.findOne _id: body.id, (err, claim) ->
+          done(err) if err
+          done(if claim then null else new Error('claim not saved'))
