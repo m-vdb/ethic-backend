@@ -778,4 +778,7 @@ describe 'routes', ->
         done(err) if err
         Claim.findOne _id: body.id, (err, claim) ->
           done(err) if err
-          done(if claim then null else new Error('claim not saved'))
+          done(new Error('claim not saved')) unless claim
+          expect(claim.date).to.be.like new Date('2015-09-14')
+          expect(claim.estimate).to.be.equal 1300.15
+          done()
