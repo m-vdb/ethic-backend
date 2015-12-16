@@ -103,7 +103,9 @@ describe 'Member', ->
         @claim = new Claim
           member: @member._id
           policy: @policy._id
-          description: 'Something happened.'
+          description: 'Something bad and looooooooooooooooooooong enough.'
+          date: new Date()
+          location: 'Paris'
         @claim.save (err) =>
           throw err if err
           @member.getClaims (err, claims) =>

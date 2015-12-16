@@ -559,7 +559,9 @@ describe 'routes', ->
         @claim = new Claim
           member: @member._id
           policy: @policy._id
-          description: 'Something bad.'
+          description: 'Something bad and looooooooooooooooooooong enough.'
+          date: new Date()
+          location: 'Paris'
         @claim.save done
 
     afterEach (done) ->
@@ -620,8 +622,11 @@ describe 'routes', ->
             id: @claim._id.toString()
             policy: @policy._id.toString()
             member: @member._id.toString()
-            description: 'Something bad.'
+            description: 'Something bad and looooooooooooooooooooong enough.'
+            date: @claim.date.toJSON()
+            location: 'Paris'
             pictures: []
+            driversCount: 1
             estimate: 0
             atFault: true
             wentToGarage: false

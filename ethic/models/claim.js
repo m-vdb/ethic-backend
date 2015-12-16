@@ -1,12 +1,12 @@
 var mongoose = require('mongoose');
 
 var claimSchema = new mongoose.Schema({
-  member: {type: mongoose.Schema.Types.ObjectId, ref: 'Member'},
-  policy: {type: mongoose.Schema.Types.ObjectId, ref: 'Policy'},
-  description: String,
-  date: Date,
-  location: String,
-  driversCount: Number,
+  member: {type: mongoose.Schema.Types.ObjectId, ref: 'Member', required: true},
+  policy: {type: mongoose.Schema.Types.ObjectId, ref: 'Policy', required: true},
+  description: {type: String, required: true},
+  date: {type: Date, required: true},
+  location: {type: String, required: true},
+  driversCount: {type: Number, default: 1},
   atFault: {type: Boolean, default: true},
   wentToGarage: {type: Boolean, default: false},
   estimate: {type: Number, default: 0},
