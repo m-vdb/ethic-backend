@@ -8,7 +8,7 @@ var claimSchema = new mongoose.Schema({
   location: String,
   driversCount: Number,
   atFault: {type: Boolean, default: true},
-  wentToGarage: Boolean,
+  wentToGarage: {type: Boolean, default: false},
   estimate: {type: Number, default: 0},
   estimateFile: mongoose.Schema.Types.ObjectId,
   pictures: [mongoose.Schema.Types.ObjectId]

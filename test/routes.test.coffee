@@ -624,6 +624,7 @@ describe 'routes', ->
             pictures: []
             estimate: 0
             atFault: true
+            wentToGarage: false
           }
         ]
         .end done
