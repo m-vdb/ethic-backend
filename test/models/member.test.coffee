@@ -3,6 +3,7 @@ expect = chai.expect
 
 Member = require '../../ethic/models/member.js'
 CarPolicy = require('../../ethic/models/policy.js').CarPolicy
+Claim = require '../../ethic/models/claim.js'
 cars = require '../../ethic/utils/cars.js'
 
 describe 'Member', ->
@@ -83,6 +84,35 @@ describe 'Member', ->
           expect(policies).to.have.length 1
           expect(policies[0].toJSON()).to.be.like @policy.toJSON()
           @policy.remove done
+
+  describe 'getClaims', ->
+    it 'should return empty array if no claims', (done) ->
+      @member.getClaims (err, claims) ->
+        expect(err).to.be.null
+        expect(claims).to.be.like []
+        done()
+
+    it 'should return a list of claims otherwise', (done) ->
+      @policy = new CarPolicy
+        member: @member._id
+        initial_premium: 10000
+        initial_deductible: 100000
+        car_vin: 'UDUEOWIJEOWE12345'
+      @policy.save (err) =>
+        throw err if err
+        @claim = new Claim
+          member: @member._id
+          policy: @policy._id
+          description: 'Something bad and looooooooooooooooooooong enough.'
+          date: new Date()
+          location: 'Paris'
+        @claim.save (err) =>
+          throw err if err
+          @member.getClaims (err, claims) =>
+            expect(err).to.be.null
+            expect(claims).to.have.length 1
+            expect(claims[0].toJSON()).to.be.like @claim.toJSON()
+            @claim.remove done
 
   describe 'hasContract', ->
     it 'should return true if member is already on contract', ->

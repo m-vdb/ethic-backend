@@ -10,7 +10,7 @@ var memberSchema = new mongoose.Schema({
   lastName: String,
   ssn: {type: String, index: {unique: true}},  // TODO: number
   email: {type: String, index: {unique: true}},
-  password: {type: String},  // TODO: store hashed version + validation rules
+  password: {type: String},
   state: {type: String, default: 'new', enum: states},
   address: String,
   contractTypes: [{type: String, enum: contracts.contractTypes}],
@@ -47,6 +47,9 @@ memberSchema.method({
   },
   getPolicies: function (cb) {
     mongoose.model('Policy').find({member: this._id}, cb);
+  },
+  getClaims: function (cb) {
+    mongoose.model('Claim').find({member: this._id}, cb);
   },
   hasContract: function (contractType) {
     return _.contains(this.contractTypes, contractType);
