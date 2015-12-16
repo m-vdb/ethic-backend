@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var claimSchema = new mongoose.Schema({
   member: {type: mongoose.Schema.Types.ObjectId, ref: 'Member', required: true},
   policy: {type: mongoose.Schema.Types.ObjectId, ref: 'Policy', required: true},
-  description: {type: String, required: true},
+  description: {type: String, required: true, minlength: 50},
   date: {type: Date, required: true},
   location: {type: String, required: true},
   driversCount: {type: Number, default: 1},
