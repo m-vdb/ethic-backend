@@ -24,7 +24,7 @@ _.extend(Contract.prototype, {
           methodName = abi.name;
 
       Contract.prototype[methodName] = method;
-    }, this)
+    }, this);
     return this;
   },
 

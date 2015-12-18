@@ -28,7 +28,7 @@ server.use(CookieParser.parse);
 server.use(passport.initialize());
 
 // common handlers
-server.use(restify.fullResponse())
+server.use(restify.fullResponse());
 server.use(restify.acceptParser(server.acceptable));
 server.use(restify.queryParser());
 server.use(restify.bodyParser());

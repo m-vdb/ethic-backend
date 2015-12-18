@@ -30,4 +30,4 @@ class BaseTask {
 }
 
 
-module.exports = BaseTask
+module.exports = BaseTask;

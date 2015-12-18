@@ -40,8 +40,9 @@ class JWTStrategy extends passport.Strategy {
   }
 
   verify (req, token) {
+    var payload;
     try {
-      var payload = jwt.verify(token, this._secretOrKey, this._verifyOpts);
+      payload = jwt.verify(token, this._secretOrKey, this._verifyOpts);
     } catch (jwtErr) {
       return this.fail(jwtErr);
     }
