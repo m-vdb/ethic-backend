@@ -45,6 +45,7 @@
   },
   "jshintConfig": {
     "node": true,
-    "esnext": true
+    "esnext": true,
+    "strict": "global"
   }
 }
