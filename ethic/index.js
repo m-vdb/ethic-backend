@@ -1,3 +1,4 @@
+'use strict';
 // mongodb needs to be configured before
 require('./mongo');
 

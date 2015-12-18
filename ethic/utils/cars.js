@@ -1,3 +1,4 @@
+'use strict';
 var EdmundsClient = require('node-edmunds-api'),
     config = require('config');
 

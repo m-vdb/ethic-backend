@@ -1,3 +1,4 @@
+'use strict';
 var config = require('config'),
     mongoose = require('mongoose'),
     gridfs = require('./gridfs');
