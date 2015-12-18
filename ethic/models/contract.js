@@ -1,3 +1,4 @@
+'use strict';
 var _ = require('underscore'),
     web3 = require('web3');
 

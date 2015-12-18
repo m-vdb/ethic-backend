@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var BaseTask = require('./base.js');
 var contracts = require('../models/contract.js').contracts;
 

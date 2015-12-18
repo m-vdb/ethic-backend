@@ -1,3 +1,4 @@
+'use strict';
 var restify = require('restify'),
     web3 = require('web3'),
     _ = require('underscore'),
