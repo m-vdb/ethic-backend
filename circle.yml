@@ -1,4 +1,6 @@
 test:
+  pre:
+    - npm run lint
   post:
     - npm run check-coverage
 

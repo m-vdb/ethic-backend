@@ -44,7 +44,7 @@ var ethUtils = module.exports = {
         clearInterval(interval);
         cb(receipt ? null : 'Cannot get transaction receipt.', receipt);
       }
-    }, 1000)
+    }, 1000);
   },
   makeMethod: function (contract, abi) {
     return function () {

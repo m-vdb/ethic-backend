@@ -6,6 +6,7 @@
     "dotenv": "^1.2.0",
     "gridfs-stream": "^1.1.1",
     "gulp-rename": "^1.2.2",
+    "jshint": "^2.8.0",
     "jsonwebtoken": "^5.4.1",
     "kue": "0.9.6",
     "mongoose": "4.1.6",
@@ -39,6 +40,12 @@
     "postinstall": "./node_modules/gulp/bin/gulp.js postinstall",
     "start": "node server.js",
     "test": "./node_modules/istanbul-harmony/lib/cli.js cover ./node_modules/gulp/bin/gulp.js test",
-    "check-coverage": "./node_modules/istanbul-harmony/lib/cli.js check-coverage"
+    "check-coverage": "./node_modules/istanbul-harmony/lib/cli.js check-coverage",
+    "lint": "./node_modules/jshint/bin/jshint ./ethic"
+  },
+  "jshintConfig": {
+    "node": true,
+    "esnext": true,
+    "strict": "global"
   }
 }

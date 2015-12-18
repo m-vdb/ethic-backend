@@ -14,7 +14,7 @@ module.exports = function () {
         else if (!doc) cb(new restify.errors.NotFoundError());
         else cb(null, doc);
       });
-    }
+    };
     return next();
   };
 };

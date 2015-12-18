@@ -11,4 +11,4 @@ module.exports = {
       description: member._id.toString()
     }, cb);
   }
-}
+};
